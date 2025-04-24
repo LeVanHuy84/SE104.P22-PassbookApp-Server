@@ -35,7 +35,7 @@ public class AuthenticationService {
                     .refreshToken("refresh_token")
                     .userId(user.getId())
                     .build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("Error authenticate", e);
             throw new RuntimeException("Error authenticate" + e.getMessage());
         }
@@ -63,7 +63,7 @@ public class AuthenticationService {
                     .refreshToken("refresh_token")
                     .userId(userRepository.save(newUser).getId())
                     .build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("Register errors", e);
             throw new RuntimeException("Register errors" + e.getMessage());
         }

@@ -1,15 +1,21 @@
 package com.group3.server.models.auth;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.group3.server.models.BaseModel;
+import com.group3.server.models.saving.SavingTicket;
+import com.group3.server.models.transactions.TransactionHistory;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -38,6 +44,16 @@ public class User extends BaseModel<Long> implements UserDetails {
     private String citizenID;
     private String address;
     private double balance;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<TransactionHistory> transactionHistories = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<SavingTicket> savingTickets = new ArrayList<>();
 
     @Column(nullable = false)
     @Builder.Default
