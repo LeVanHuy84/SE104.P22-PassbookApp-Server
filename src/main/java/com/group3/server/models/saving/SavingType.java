@@ -42,7 +42,8 @@ public class SavingType {
     private boolean isActive = true;
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "savingType", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<SavingTicket> savingTickets = new ArrayList<>();
+
 }

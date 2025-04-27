@@ -23,7 +23,7 @@ public class SavingTicketResponse {
     private Long id;
 
     private Long userId;
-    private Long userFullName;
+    private Long userFullname;
 
     private Long savingTypeId;
     private String savingTypeName;

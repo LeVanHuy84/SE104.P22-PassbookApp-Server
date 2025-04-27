@@ -19,13 +19,12 @@ import com.group3.server.services.auth.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
     private final UserRepository userRepository;
     private final UserService userService;
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,7 +40,7 @@ public class AppConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Cho phép các HTTP method
                         .allowCredentials(false)
                         .allowedHeaders("*"); // Cho phép tất cả headers
-                        
+
             }
         };
     }
@@ -54,16 +53,16 @@ public class AppConfig {
         return provider;
     }
 
-    @Bean 
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
-    //test
+    // test
     @Bean
     public CommandLineRunner commandLineRunner() {
         return arg -> {
-            User admin = userRepository.findByUsername("admin").orElseThrow();
+            User admin = userRepository.findByUsername("admin").orElse(null);
             if (admin == null) {
                 User user = User.builder()
                         .username("admin")

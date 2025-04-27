@@ -64,5 +64,4 @@ public class SavingTicket {
     @Builder.Default
     private boolean isActive = true;
 
-
 }

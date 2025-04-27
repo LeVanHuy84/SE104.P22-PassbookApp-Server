@@ -15,4 +15,11 @@ public interface SavingTicketMapper extends GenericMapper<SavingTicketRequest, S
     @Mapping(target = "withdrawalTickets", ignore = true)
     @Override
     SavingTicket toEntity(SavingTicketRequest dto);
+
+    @Override
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.fullname", target = "userFullname")
+    @Mapping(source = "savingType.id", target = "savingTypeId")
+    @Mapping(source = "savingType.typeName", target = "savingTypeName")
+    SavingTicketResponse toDTO(SavingTicket entity);
 }
