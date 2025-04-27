@@ -1,6 +1,9 @@
 package com.group3.server.services.auth;
 
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +14,7 @@ import com.group3.server.dtos.auth.RegisterRequest;
 import com.group3.server.dtos.auth.TokenResponse;
 import com.group3.server.models.auth.User;
 import com.group3.server.repositories.auth.UserRepository;
+import com.group3.server.repositories.system.ParameterRepository;
 import com.group3.server.services.JwtService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class AuthenticationService {
     private final PasswordEncoder encoder;
     private final AuthenticationManager manager;
     private final JwtService jwtService;
+    private final ParameterRepository parameterRepository;
 
     public TokenResponse authenticate(LoginRequest request) {
         try {
@@ -46,6 +51,20 @@ public class AuthenticationService {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 throw new RuntimeException("Username: " + request.getUsername() + " has exist");
             }
+
+            // Lấy tuổi tối thiểu từ ParameterRepository
+            int minAge = parameterRepository.findById(1L)
+                                            .orElseThrow(() -> new RuntimeException("Minimum age parameter not found"))
+                                            .getMinAge();
+
+            // Tính tuổi của người dùng từ ngày sinh
+            LocalDate birthDate = request.getDateOfBirth();
+            int userAge = Period.between(birthDate, LocalDate.now()).getYears();
+
+            if (userAge < minAge) {
+                throw new RuntimeException("User is under the minimum age of " + minAge);
+            }
+            
             User newUser = User.builder()
                     .username(request.getUsername())
                     .password(encoder.encode(request.getPassword()))

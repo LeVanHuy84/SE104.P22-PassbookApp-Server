@@ -14,18 +14,6 @@ public class SalesReportSpecification {
                 .where(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
-    // private static Specification<SalesReport> hasSavingTypeId(Long savingTypeId) {
-    //     return (root, query, cb) -> {
-    //         if (savingTypeId == null) return cb.conjunction();
-    //         // Giả sử field `salesReportDetails` là một List chứa các detail, mỗi detail có savingType
-    //         // Lọc bằng JOIN (subquery hoặc join fetch tuỳ JPQL hoặc Criteria API)
-    //         return cb.equal(
-    //             root.join("salesReportDetails").get("savingType").get("id"),
-    //             savingTypeId
-    //         );
-    //     };
-    // }
-
     private static Specification<SalesReport> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();

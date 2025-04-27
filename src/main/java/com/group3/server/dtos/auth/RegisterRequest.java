@@ -1,5 +1,6 @@
 package com.group3.server.dtos.auth;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,6 +45,6 @@ public class RegisterRequest {
     private String address;
 
     @Min(value = 100)
-    private double balance;
+    private BigDecimal balance;
 
 }

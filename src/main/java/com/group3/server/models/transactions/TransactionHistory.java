@@ -43,7 +43,7 @@ public class TransactionHistory {
     
     @CreationTimestamp // Tự động set thời gian khi insert
     @Column(name = "transaction_date", updatable = false)
-    private LocalDateTime transactionDate;
+    private LocalDateTime transactionDateTime;
 
     private TransactionStatus status;
 

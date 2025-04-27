@@ -2,10 +2,14 @@ package com.group3.server.models.saving;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.group3.server.models.auth.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +46,11 @@ public class SavingTicket {
     @JsonBackReference
     private SavingType savingType;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "savingTicket", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<WithdrawalTicket> withdrawalTickets = new ArrayList<>();
+
     @Column(precision = 5, scale = 2) // Tổng 5 chữ số, 2 chữ số sau dấu phẩy
     private BigDecimal interestRate;
 
@@ -53,4 +63,6 @@ public class SavingTicket {
     @Column(nullable = false)
     @Builder.Default
     private boolean isActive = true;
+
+
 }

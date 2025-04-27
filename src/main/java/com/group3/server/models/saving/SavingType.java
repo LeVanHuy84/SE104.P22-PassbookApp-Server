@@ -30,6 +30,7 @@ public class SavingType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique=true, nullable=false)
     private String typeName;
     private int duration;
     

@@ -1,5 +1,6 @@
 package com.group3.server.models.auth;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public class User extends BaseModel<Long> implements UserDetails {
     private LocalDate dateOfBirth;
     private String citizenID;
     private String address;
-    private double balance;
+    private BigDecimal balance;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

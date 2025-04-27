@@ -1,5 +1,6 @@
 package com.group3.server.configs;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.group3.server.models.auth.User;
+import com.group3.server.repositories.auth.UserRepository;
 import com.group3.server.services.auth.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
-
+    private final UserRepository userRepository;
     private final UserService userService;
     
     @Bean
@@ -54,5 +57,21 @@ public class AppConfig {
     @Bean 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    //test
+    @Bean
+    public CommandLineRunner commandLineRunner() {
+        return arg -> {
+            User admin = userRepository.findByUsername("admin").orElseThrow();
+            if (admin == null) {
+                User user = User.builder()
+                        .username("admin")
+                        .password(passwordEncoder().encode("123456"))
+                        .fullname("ADMIN")
+                        .build();
+                userRepository.save(user);
+            }
+        };
     }
 }
