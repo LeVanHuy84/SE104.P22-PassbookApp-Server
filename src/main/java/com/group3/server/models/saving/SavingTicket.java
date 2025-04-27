@@ -36,18 +36,18 @@ public class SavingTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "saving_type_id", nullable = false)
     @JsonBackReference
     private SavingType savingType;
 
     @Builder.Default
-    @OneToMany(mappedBy = "savingTicket", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "savingTicket", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     @JsonManagedReference
     private List<WithdrawalTicket> withdrawalTickets = new ArrayList<>();
 

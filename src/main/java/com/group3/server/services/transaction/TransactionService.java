@@ -92,6 +92,7 @@ public class TransactionService {
             // B8: Lưu D4 xuống bộ nhớ phụ
             userRepository.save(user);
             TransactionHistory transaction = transactionMapper.toEntity(request);
+            transaction.setUser(user);
             TransactionHistory saved = transactionHistoryRepository.saveAndFlush(transaction);
 
             // B9: Xuất D5 ra máy in (ở đây hiểu là trả kết quả ra cho client)
@@ -104,15 +105,15 @@ public class TransactionService {
         // B11: Kết thúc (tự động rollback hoặc commit)
     }
 
-    public void deleteTransactionHistory(Long id) {
-        try {
-            TransactionHistory transactionHistory = transactionHistoryRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Transaction history not found"));
+    // public void deleteTransactionHistory(Long id) {
+    //     try {
+    //         TransactionHistory transactionHistory = transactionHistoryRepository.findById(id)
+    //                 .orElseThrow(() -> new RuntimeException("Transaction history not found"));
 
-            transactionHistoryRepository.delete(transactionHistory);
+    //         transactionHistoryRepository.delete(transactionHistory);
 
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Error deleting transaction history" + e.getMessage());
-        }
-    }
+    //     } catch (RuntimeException e) {
+    //         throw new RuntimeException("Error deleting transaction history" + e.getMessage());
+    //     }
+    // }
 }

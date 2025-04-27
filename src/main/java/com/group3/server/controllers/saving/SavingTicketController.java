@@ -101,7 +101,7 @@ public class SavingTicketController {
     //     return ResponseEntity.ok(response);
     // }
 
-    @PatchMapping("/{id}/active")
+    @PatchMapping("/active/{id}")
     public ResponseEntity<Void> setSavingTicketActive(@PathVariable Long id, @RequestBody boolean isActive) {
         savingTicketService.setSavingTicketActive(id, isActive);
         return ResponseEntity.noContent().build();

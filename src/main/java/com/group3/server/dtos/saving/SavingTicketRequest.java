@@ -28,7 +28,7 @@ public class SavingTicketRequest {
     @NotNull(message="Amount of saving ticket is required")
     private BigDecimal amount;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime startDate;
 }

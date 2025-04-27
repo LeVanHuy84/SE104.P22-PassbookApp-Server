@@ -19,6 +19,7 @@ import com.group3.server.models.transactions.TransactionHistory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -44,15 +45,17 @@ public class User extends BaseModel<Long> implements UserDetails {
     private LocalDate dateOfBirth;
     private String citizenID;
     private String address;
-    private BigDecimal balance;
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private BigDecimal balance = new BigDecimal(0);
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<TransactionHistory> transactionHistories = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<SavingTicket> savingTickets = new ArrayList<>();
 

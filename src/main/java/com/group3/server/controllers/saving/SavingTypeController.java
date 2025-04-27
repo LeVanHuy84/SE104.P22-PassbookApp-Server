@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping("/api/saving-types")
+@RequestMapping("/api/v1/saving-types")
 @RequiredArgsConstructor
 public class SavingTypeController {
     private final SavingTypeService savingTypeService;

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,7 +43,7 @@ public class SavingType {
     private boolean isActive = true;
 
     @Builder.Default
-    @OneToMany(mappedBy = "savingType", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "savingType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<SavingTicket> savingTickets = new ArrayList<>();
 

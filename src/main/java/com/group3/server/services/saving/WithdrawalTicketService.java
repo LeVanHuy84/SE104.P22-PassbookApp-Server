@@ -46,7 +46,7 @@ public class WithdrawalTicketService {
             }
 
             BigDecimal interest;
-            LocalDate withdrawalDate = request.getWithdrawalDate();
+            LocalDate withdrawalDate = request.getWithdrawalDate().toLocalDate();
             LocalDate openDate = savingTicket.getStartDate().toLocalDate();
             BigDecimal balance = savingTicket.getBalance();
             BigDecimal updatedBalance;
@@ -101,8 +101,9 @@ public class WithdrawalTicketService {
 
             // Tạo phiếu giao dịch chuyển tiền vào tài khoản
             TransactionRequest transaction = TransactionRequest.builder()
+                .userId(savingTicket.getUser().getId())
                 .amount(request.getWithdrawalAmount())
-                .transactionType(TransactionType.SAVE)
+                .transactionType(TransactionType.WITHDRAW_SAVING)
                 .build();
 
             transactionService.createTransaction(transaction);

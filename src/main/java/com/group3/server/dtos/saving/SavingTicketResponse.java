@@ -1,7 +1,7 @@
 package com.group3.server.dtos.saving;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class SavingTicketResponse {
     private Long id;
 
     private Long userId;
-    private Long userFullname;
+    private String userFullname;
 
     private Long savingTypeId;
     private String savingTypeName;
@@ -33,15 +33,15 @@ public class SavingTicketResponse {
 
     private BigDecimal amount;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private LocalDate startDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime startDate;
 
     private BigDecimal balance;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private LocalDate maturityDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime maturityDate;
 
     @Builder.Default
     List<WithdrawalTicketResponse> withdrawalTickets = new ArrayList<>();

@@ -13,13 +13,14 @@ import com.group3.server.dtos.saving.SavingTicketRequest;
 import com.group3.server.dtos.saving.SavingTicketResponse;
 import com.group3.server.dtos.transaction.TransactionRequest;
 import com.group3.server.mappers.saving.SavingTicketMapper;
+import com.group3.server.models.auth.User;
 import com.group3.server.models.saving.SavingTicket;
 import com.group3.server.models.saving.SavingType;
 import com.group3.server.models.transactions.enums.TransactionType;
+import com.group3.server.repositories.auth.UserRepository;
 import com.group3.server.repositories.saving.SavingTicketRepository;
 import com.group3.server.repositories.saving.SavingTypeRepository;
 import com.group3.server.repositories.system.ParameterRepository;
-import com.group3.server.services.auth.UserService;
 import com.group3.server.services.transaction.TransactionService;
 
 import jakarta.transaction.Transactional;
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class SavingTicketService {
     private final SavingTicketRepository savingTicketRepository;
     private final SavingTicketMapper savingTicketMapper;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final SavingTypeRepository savingTypeRepository;
     private final ParameterRepository parameterRepository;
     private final TransactionService transactionService;
@@ -49,7 +50,8 @@ public class SavingTicketService {
     public SavingTicketResponse createSavingTicket(SavingTicketRequest request) {
         try {
             // B2: Lấy số dư tài khoản
-            BigDecimal balance = userService.getUserBalance();
+            User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            BigDecimal balance = user.getBalance();
 
             // B3: Đọc loại hình tiết kiệm
             SavingType savingType = savingTypeRepository.findById(request.getSavingTypeId())
@@ -69,6 +71,7 @@ public class SavingTicketService {
 
             // B7: Set thông tin cho saving ticket
             SavingTicket ticket = savingTicketMapper.toEntity(request);
+            ticket.setUser(user);
             ticket.setActive(true);
             ticket.setBalance(request.getAmount());
             ticket.setMaturityDate(request.getStartDate().plusMonths(savingType.getDuration()));
@@ -78,6 +81,7 @@ public class SavingTicketService {
 
             // Tạo phiếu giao dịch
             TransactionRequest transaction = TransactionRequest.builder()
+                .userId(request.getUserId())
                 .amount(request.getAmount())
                 .transactionType(TransactionType.SAVE)
                 .build();
