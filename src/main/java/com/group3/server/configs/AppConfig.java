@@ -88,19 +88,19 @@ public class AppConfig {
                 SavingType noTerm = SavingType.builder()
                         .typeName("Không kỳ hạn")
                         .duration(0) // Không kỳ hạn
-                        .interestRate(new BigDecimal("0.5"))
+                        .interestRate(new BigDecimal("0.005"))
                         .build();
 
                 SavingType threeMonths = SavingType.builder()
                         .typeName("3 tháng")
                         .duration(3) // 3 tháng
-                        .interestRate(new BigDecimal("5.0"))
+                        .interestRate(new BigDecimal("0.05"))
                         .build();
 
                 SavingType sixMonths = SavingType.builder()
                         .typeName("6 tháng")
                         .duration(6) // 6 tháng
-                        .interestRate(new BigDecimal("5.5"))
+                        .interestRate(new BigDecimal("0.055"))
                         .build();
 
                 // Lưu các loại tiết kiệm vào cơ sở dữ liệu

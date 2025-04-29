@@ -50,7 +50,16 @@ public class WithdrawalTicketService {
             LocalDate openDate = savingTicket.getStartDate().toLocalDate();
             BigDecimal balance = savingTicket.getBalance();
             BigDecimal updatedBalance;
-            BigDecimal nonTermInterestRate = savingTypeRepository.findByDuration(0).getInterestRate(); // Lãi suất không kỳ hạn
+            BigDecimal nonTermInterestRate = savingTypeRepository.findByDuration(0).getInterestRate(); // Lãi suất không
+
+            updatedBalance = balance.subtract(request.getWithdrawalAmount());
+
+            // Kiểm tra nếu số dư còn lại bằng 0 -> trạng thái = đóng
+            if (updatedBalance.compareTo(BigDecimal.ZERO) == 0) {
+                savingTicket.setActive(false); // Đóng phiếu gửi
+            } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("Withdrawal amount exceeds balance plus interest");
+            }
 
             // B5: Kiểm tra loại tiết kiệm
             if (savingTicket.getDuration() != 0) { // B5.1: Có kỳ hạn
@@ -58,7 +67,7 @@ public class WithdrawalTicketService {
                 if (withdrawalDate.isBefore(maturityDate)) {
                     // B5.1.1: Ngày rút trước hạn -> tính theo không kỳ hạn
                     long daysSent = ChronoUnit.DAYS.between(openDate, withdrawalDate); // B5.1.2
-                    interest = balance
+                    interest = request.getWithdrawalAmount()
                             .multiply(BigDecimal.valueOf(daysSent))
                             .divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP)
                             .multiply(nonTermInterestRate); // B5.1.3
@@ -66,29 +75,20 @@ public class WithdrawalTicketService {
                 } else {
                     // B5.1.5: Rút sau ngày đáo hạn -> tính đủ lãi
                     // Lãi suất kỳ hạn
-                    interest = balance.multiply(savingTicket.getInterestRate());
+                    interest = request.getWithdrawalAmount().multiply(savingTicket.getInterestRate());
                 }
             } else {
                 // B5.2: Không kỳ hạn
                 long daysSent = ChronoUnit.DAYS.between(openDate, withdrawalDate); // B5.2.1
                 BigDecimal interestRate = savingTicket.getInterestRate();
-                interest = balance
+                interest = request.getWithdrawalAmount()
                         .multiply(BigDecimal.valueOf(daysSent))
                         .divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP)
                         .multiply(interestRate); // B5.2.2
             }
 
-            // B6: Tính số dư sau khi rút
-            updatedBalance = balance.add(interest).subtract(request.getWithdrawalAmount());
-
-            // B7: Kiểm tra nếu số dư còn lại bằng 0 -> trạng thái = đóng
-            if (updatedBalance.compareTo(BigDecimal.ZERO) == 0) {
-                savingTicket.setActive(false); // Đóng phiếu gửi
-            } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
-                throw new RuntimeException("Withdrawal amount exceeds balance plus interest");
-            }
-
             savingTicket.setBalance(updatedBalance);
+            BigDecimal actualAmount = request.getWithdrawalAmount().add(interest);
 
             // B8: Nếu không thỏa 1 trong các điều kiện thì qua B11 (đã xử lý ở trên bằng
             // throw)
@@ -96,15 +96,16 @@ public class WithdrawalTicketService {
             // B9: Lưu D4 xuống bộ nhớ phụ (lưu WithdrawalTicket vào DB)
             WithdrawalTicket ticket = withdrawalTicketMapper.toEntity(request);
             ticket.setSavingTicket(savingTicket);
+            ticket.setActualAmount(actualAmount);
 
-            WithdrawalTicket savedTicket = withdrawalTicketRepository.saveAndFlush(ticket);
+            WithdrawalTicket savedTicket = withdrawalTicketRepository.save(ticket);
 
             // Tạo phiếu giao dịch chuyển tiền vào tài khoản
             TransactionRequest transaction = TransactionRequest.builder()
-                .userId(savingTicket.getUser().getId())
-                .amount(request.getWithdrawalAmount())
-                .transactionType(TransactionType.WITHDRAW_SAVING)
-                .build();
+                    .userId(savingTicket.getUser().getId())
+                    .amount(actualAmount)
+                    .transactionType(TransactionType.WITHDRAW_SAVING)
+                    .build();
 
             transactionService.createTransaction(transaction);
 
@@ -134,13 +135,14 @@ public class WithdrawalTicketService {
     // }
 
     // public void deleteWithdrawalTicket(Long id) {
-    //     try {
-    //         WithdrawalTicket ticket = withdrawalTicketRepository.findById(id)
-    //                 .orElseThrow(() -> new RuntimeException("Withdrawal ticket not found"));
+    // try {
+    // WithdrawalTicket ticket = withdrawalTicketRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("Withdrawal ticket not found"));
 
-    //         withdrawalTicketRepository.delete(ticket);
-    //     } catch (RuntimeException e) {
-    //         throw new RuntimeException("Error deleting withdrawal ticket: " + e.getMessage());
-    //     }
+    // withdrawalTicketRepository.delete(ticket);
+    // } catch (RuntimeException e) {
+    // throw new RuntimeException("Error deleting withdrawal ticket: " +
+    // e.getMessage());
+    // }
     // }
 }

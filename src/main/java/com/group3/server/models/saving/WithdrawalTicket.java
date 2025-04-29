@@ -35,5 +35,7 @@ public class WithdrawalTicket {
 
     private BigDecimal withdrawalAmount;
 
+    private BigDecimal actualAmount;
+
     private LocalDateTime withdrawalDate;
 }
