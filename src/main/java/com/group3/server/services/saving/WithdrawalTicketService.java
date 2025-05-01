@@ -17,6 +17,7 @@ import com.group3.server.models.transactions.enums.TransactionType;
 import com.group3.server.repositories.saving.SavingTicketRepository;
 import com.group3.server.repositories.saving.SavingTypeRepository;
 import com.group3.server.repositories.saving.WithdrawalTicketRepository;
+import com.group3.server.services.report.SalesReportService;
 import com.group3.server.services.transaction.TransactionService;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +32,7 @@ public class WithdrawalTicketService {
     private final SavingTicketRepository savingTicketRepository;
     private final SavingTypeRepository savingTypeRepository;
     private final TransactionService transactionService;
+    private final SalesReportService salesReportService;
 
     @Transactional
     public WithdrawalTicketResponse createWithdrawalTicket(WithdrawalTicketRequest request) {
@@ -59,6 +61,13 @@ public class WithdrawalTicketService {
                 savingTicket.setActive(false); // Đóng phiếu gửi
             } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
                 throw new RuntimeException("Withdrawal amount exceeds balance plus interest");
+            }
+
+            // Kiểm tra ngày
+            if (request.getWithdrawalDate().toLocalDate().isAfter(LocalDate.now())) {
+                throw new RuntimeException("Start date cannot exceed current date");
+            } else if (request.getWithdrawalDate().toLocalDate().isBefore(LocalDate.now().minusDays(7))) {
+                throw new RuntimeException("Cannot create tickets more than 7 days ago");
             }
 
             // B5: Kiểm tra loại tiết kiệm
@@ -108,6 +117,10 @@ public class WithdrawalTicketService {
                     .build();
 
             transactionService.createTransaction(transaction);
+
+            if(!request.getWithdrawalDate().toLocalDate().isEqual(LocalDate.now())) {
+                salesReportService.updateReportFromWithdrawalTicket(savedTicket);
+            }
 
             // B10: Xuất D5 ra máy in (ở đây có thể hiểu là trả về DTO cho client xử lý xuất
             // phiếu)

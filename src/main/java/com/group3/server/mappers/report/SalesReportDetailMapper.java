@@ -11,8 +11,9 @@ import com.group3.server.models.reports.SalesReportDetail;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SalesReportDetailMapper {
-    @Mapping(source = "savingType.id", target = "savingTypeId")
-    @Mapping(source = "savingType.typeName", target = "savingTypeName")
+
+    @Mapping(source="savingType.id", target="savingTypeId")
+    @Mapping(source="savingType.typeName", target="savingTypeName")
     SalesReportDetailResponse toDTO(SalesReportDetail entity);
 
     List<SalesReportDetailResponse> toDTOs(List<SalesReportDetail> entities);

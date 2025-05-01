@@ -1,6 +1,7 @@
 package com.group3.server.services.saving;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import com.group3.server.repositories.auth.UserRepository;
 import com.group3.server.repositories.saving.SavingTicketRepository;
 import com.group3.server.repositories.saving.SavingTypeRepository;
 import com.group3.server.repositories.system.ParameterRepository;
+import com.group3.server.services.report.SalesReportService;
 import com.group3.server.services.transaction.TransactionService;
 
 import jakarta.transaction.Transactional;
@@ -35,6 +37,7 @@ public class SavingTicketService {
     private final SavingTypeRepository savingTypeRepository;
     private final ParameterRepository parameterRepository;
     private final TransactionService transactionService;
+    private final SalesReportService salesReportService;
 
     public Page<SavingTicketResponse> getSavingTickets(SavingTicketFilter filter, Pageable pageable) {
         try {
@@ -50,8 +53,16 @@ public class SavingTicketService {
     public SavingTicketResponse createSavingTicket(SavingTicketRequest request) {
         try {
             // B2: Lấy số dư tài khoản
-            User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
             BigDecimal balance = user.getBalance();
+
+            // Kiểm tra ngày
+            if (request.getStartDate().toLocalDate().isAfter(LocalDate.now())) {
+                throw new RuntimeException("Start date cannot exceed current date");
+            } else if (request.getStartDate().toLocalDate().isBefore(LocalDate.now().minusDays(7))) {
+                throw new RuntimeException("Cannot create tickets more than 7 days ago");
+            }
 
             // B3: Đọc loại hình tiết kiệm
             SavingType savingType = savingTypeRepository.findById(request.getSavingTypeId())
@@ -81,15 +92,20 @@ public class SavingTicketService {
 
             // Tạo phiếu giao dịch
             TransactionRequest transaction = TransactionRequest.builder()
-                .userId(request.getUserId())
-                .amount(request.getAmount())
-                .transactionType(TransactionType.SAVE)
-                .build();
+                    .userId(request.getUserId())
+                    .amount(request.getAmount())
+                    .transactionType(TransactionType.SAVE)
+                    .build();
 
             transactionService.createTransaction(transaction);
 
             // B8: Lưu saving ticket
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
+
+            if(!request.getStartDate().toLocalDate().isEqual(LocalDate.now())) {
+                salesReportService.updateReportFromSavingTicket(saved);
+            }
+
             return savingTicketMapper.toDTO(saved);
         } catch (RuntimeException e) {
             throw new RuntimeException("Error creating saving ticket: " + e.getMessage(), e);
@@ -97,42 +113,48 @@ public class SavingTicketService {
     }
 
     // @Transactional
-    // public SavingTicketResponse updateSavingTicket(Long id, SavingTicketRequest request) {
-    //     try {
-    //         SavingTicket ticket = savingTicketRepository.findById(id)
-    //                 .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
+    // public SavingTicketResponse updateSavingTicket(Long id, SavingTicketRequest
+    // request) {
+    // try {
+    // SavingTicket ticket = savingTicketRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
 
-    //         if (ticket.getWithdrawalTickets() != null && !ticket.getWithdrawalTickets().isEmpty()) {
-    //             throw new RuntimeException(
-    //                     "Saving ticket cannot be deleted because it has withdrawal tickets associated with it.");
-    //         }
+    // if (ticket.getWithdrawalTickets() != null &&
+    // !ticket.getWithdrawalTickets().isEmpty()) {
+    // throw new RuntimeException(
+    // "Saving ticket cannot be deleted because it has withdrawal tickets associated
+    // with it.");
+    // }
 
-    //         if(request.getSavingTypeId().compareTo(ticket.getSavingType().getId()) != 0) {
-    //             throw new RuntimeException("Saving type cannot alter");
-    //         }
+    // if(request.getSavingTypeId().compareTo(ticket.getSavingType().getId()) != 0)
+    // {
+    // throw new RuntimeException("Saving type cannot alter");
+    // }
 
-    //         BigDecimal balance = userService.getUserBalance();
-    //         BigDecimal minSavingAmount = parameterRepository.findById(1L).orElseThrow().getMinSavingAmount();
-    //         BigDecimal difference = request.getAmount().subtract(ticket.getAmount());
+    // BigDecimal balance = userService.getUserBalance();
+    // BigDecimal minSavingAmount =
+    // parameterRepository.findById(1L).orElseThrow().getMinSavingAmount();
+    // BigDecimal difference = request.getAmount().subtract(ticket.getAmount());
 
-    //         if (request.getAmount().compareTo(minSavingAmount) < 0) {
-    //             throw new RuntimeException(
-    //                     "Deposit amount must be greater than minimum required: " + minSavingAmount);
-    //         }
-    //         if (difference.compareTo(balance) > 0) {
-    //             throw new RuntimeException("Insufficient account balance");
-    //         }
+    // if (request.getAmount().compareTo(minSavingAmount) < 0) {
+    // throw new RuntimeException(
+    // "Deposit amount must be greater than minimum required: " + minSavingAmount);
+    // }
+    // if (difference.compareTo(balance) > 0) {
+    // throw new RuntimeException("Insufficient account balance");
+    // }
 
-    //         // Cập nhật các trường
-    //         savingTicketMapper.updateEntityFromDto(request, ticket);
-    //         ticket.setActive(true);
-    //         ticket.setBalance(request.getAmount());
-    //         ticket.setMaturityDate(request.getStartDate().plusMonths(ticket.getDuration()));
+    // // Cập nhật các trường
+    // savingTicketMapper.updateEntityFromDto(request, ticket);
+    // ticket.setActive(true);
+    // ticket.setBalance(request.getAmount());
+    // ticket.setMaturityDate(request.getStartDate().plusMonths(ticket.getDuration()));
 
-    //         return savingTicketMapper.toDTO(savingTicketRepository.save(ticket));
-    //     } catch (RuntimeException e) {
-    //         throw new RuntimeException("Error updating saving ticket: " + e.getMessage(), e);
-    //     }
+    // return savingTicketMapper.toDTO(savingTicketRepository.save(ticket));
+    // } catch (RuntimeException e) {
+    // throw new RuntimeException("Error updating saving ticket: " + e.getMessage(),
+    // e);
+    // }
     // }
 
     @Transactional
@@ -151,19 +173,21 @@ public class SavingTicketService {
 
     // @Transactional
     // public void deleteSavingTicket(Long id) {
-    //     try {
-    //         SavingTicket savingTicket = savingTicketRepository.findById(id)
-    //                 .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
+    // try {
+    // SavingTicket savingTicket = savingTicketRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
 
-    //         if (savingTicket.getWithdrawalTickets() != null && !savingTicket.getWithdrawalTickets().isEmpty()) {
-    //             throw new RuntimeException(
-    //                     "Saving ticket cannot be deleted because it has withdrawal tickets associated with it.");
-    //         }
+    // if (savingTicket.getWithdrawalTickets() != null &&
+    // !savingTicket.getWithdrawalTickets().isEmpty()) {
+    // throw new RuntimeException(
+    // "Saving ticket cannot be deleted because it has withdrawal tickets associated
+    // with it.");
+    // }
 
-    //         savingTicketRepository.delete(savingTicket);
+    // savingTicketRepository.delete(savingTicket);
 
-    //     } catch (RuntimeException e) {
-    //         throw new RuntimeException("Error deleting menu" + e.getMessage());
-    //     }
+    // } catch (RuntimeException e) {
+    // throw new RuntimeException("Error deleting menu" + e.getMessage());
+    // }
     // }
 }

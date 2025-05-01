@@ -1,7 +1,7 @@
 package com.group3.server.dtos.Specification;
 
-import java.time.LocalDate;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -14,6 +14,7 @@ public class SavingTicketSpecification {
         return Specification
                 .where(hasUserId(filter.getUserId()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
+                .and(hasIsActive(filter.getIsActive()))
                 .and(hasAmountBetween(filter.getMinAmount(), filter.getMaxAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
@@ -29,6 +30,13 @@ public class SavingTicketSpecification {
         return (root, query, cb) -> {
             if (savingTypeId == null) return cb.conjunction();
             return cb.equal(root.get("savingType").get("id"), savingTypeId);
+        };
+    }
+
+    private static Specification<SavingTicket> hasIsActive(Boolean isActive) {
+        return (root, query, cb) -> {
+            if (isActive == null) return cb.conjunction();
+            return cb.equal(root.get("isActive"), isActive);
         };
     }
 

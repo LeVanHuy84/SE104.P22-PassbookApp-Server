@@ -1,0 +1,24 @@
+package com.group3.server.jobs;
+
+import java.time.LocalDate;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.group3.server.services.report.SalesReportService;
+
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor
+public class SalesReportScheduler {
+
+    private final SalesReportService salesReportService;
+
+    // Chạy lúc 00:01 sáng mỗi ngày
+    @Scheduled(cron = "0 1 0 * * *")
+    public void generateDailyReport() {
+        LocalDate today = LocalDate.now().minusDays(1); // Báo cáo cho ngày hôm qua
+        salesReportService.createDailyReport(today);
+    }
+}

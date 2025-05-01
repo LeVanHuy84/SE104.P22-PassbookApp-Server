@@ -2,10 +2,12 @@ package com.group3.server.models.reports;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.group3.server.models.saving.SavingType;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -13,7 +15,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Entity
@@ -29,12 +30,14 @@ public class SalesReportDetail {
     private BigDecimal difference;
 
     @MapsId("savingTypeId")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "saving_type_id")
+    @JsonBackReference
     private SavingType savingType;
 
     @MapsId("reportId")
     @ManyToOne
     @JoinColumn(name = "report_id")
+    @JsonBackReference
     private SalesReport salesReport;
 }

@@ -24,7 +24,7 @@ public class SalesReportResponse {
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate report_date;
+    private LocalDate reportDate;
 
     private BigDecimal totalIncome;
     private BigDecimal totalExpense;

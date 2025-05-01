@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.group3.server.models.reports.SalesReportDetail;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,4 +48,8 @@ public class SavingType {
     @JsonManagedReference
     private List<SavingTicket> savingTickets = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "savingType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<SalesReportDetail> salesReportDetails = new ArrayList<>();
 }
