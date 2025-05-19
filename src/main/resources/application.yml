@@ -7,7 +7,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-      
     show-sql: false
     database: postgresql
     open-in-view: false

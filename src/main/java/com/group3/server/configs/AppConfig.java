@@ -33,11 +33,11 @@ public class AppConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**") // Cho phép tất cả URL
-                        .allowedOrigins("*") // Cho phép mọi domain
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Cho phép các HTTP method
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(false)
-                        .allowedHeaders("*"); // Cho phép tất cả headers
+                        .allowedHeaders("*");
                         
             }
         };

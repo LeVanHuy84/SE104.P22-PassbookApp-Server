@@ -1,24 +1,13 @@
 package com.group3.server.models.auth;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.group3.server.models.BaseModel;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -27,13 +16,17 @@ import lombok.Setter;
 @Entity
 @Builder
 @Table(name = "users")
-public class User extends BaseModel<Long> implements UserDetails {
+public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String username;
     private String password;
     private String email;
     private String phone;
-    private String fullname;
+    private String fullName;
     private LocalDate dateOfBirth;
     private String citizenID;
     private String address;
@@ -43,28 +36,29 @@ public class User extends BaseModel<Long> implements UserDetails {
     @Builder.Default
     private boolean isActive = true;
 
-    @OneToMany(mappedBy = "user")
-    @Builder.Default
-    private Set<GroupUser> groupUsers = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Group group;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return group.getPermissions().stream().
+                map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                .toList();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
