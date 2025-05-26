@@ -22,7 +22,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
     private String password;
     private String email;
     private String phone;
@@ -36,7 +35,7 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean isActive = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Group group;
 
     @Override
@@ -64,5 +63,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }

@@ -23,7 +23,7 @@ public class Group {
     private String name;
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "group_permissions",
             joinColumns = @JoinColumn(name = "group_id"),

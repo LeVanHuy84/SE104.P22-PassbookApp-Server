@@ -10,7 +10,7 @@ import com.group3.server.models.auth.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     
-    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
 
 
 }

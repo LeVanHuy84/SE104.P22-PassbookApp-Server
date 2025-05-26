@@ -10,6 +10,31 @@ spring:
     show-sql: false
     database: postgresql
     open-in-view: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      username: ${REDIS_USERNAME}
+      ssl:
+        enabled: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${ADMIN_EMAIL}
+    password: ${ADMIN_EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
+            required: true
+
 jwt:
-  expiration: ${JWT_EXPIRATION}
+  access-expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
   secretKey: ${JWT_SECRET_KEY}
+  refresh-secret-key: ${JWT_REFRESH_SECRET_KEY}
+  issuer: tanh.io

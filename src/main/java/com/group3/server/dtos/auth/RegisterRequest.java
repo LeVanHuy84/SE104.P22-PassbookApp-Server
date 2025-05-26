@@ -22,14 +22,15 @@ import lombok.Setter;
 @Builder
 public class RegisterRequest {
     @NotBlank
-    private String username;
-    @NotBlank
     private String password;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     private String phone;
+    
     @NotBlank
     private String fullName;
 
