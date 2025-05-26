@@ -112,51 +112,6 @@ public class SavingTicketService {
         }
     }
 
-    // @Transactional
-    // public SavingTicketResponse updateSavingTicket(Long id, SavingTicketRequest
-    // request) {
-    // try {
-    // SavingTicket ticket = savingTicketRepository.findById(id)
-    // .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
-
-    // if (ticket.getWithdrawalTickets() != null &&
-    // !ticket.getWithdrawalTickets().isEmpty()) {
-    // throw new RuntimeException(
-    // "Saving ticket cannot be deleted because it has withdrawal tickets associated
-    // with it.");
-    // }
-
-    // if(request.getSavingTypeId().compareTo(ticket.getSavingType().getId()) != 0)
-    // {
-    // throw new RuntimeException("Saving type cannot alter");
-    // }
-
-    // BigDecimal balance = userService.getUserBalance();
-    // BigDecimal minSavingAmount =
-    // parameterRepository.findById(1L).orElseThrow().getMinSavingAmount();
-    // BigDecimal difference = request.getAmount().subtract(ticket.getAmount());
-
-    // if (request.getAmount().compareTo(minSavingAmount) < 0) {
-    // throw new RuntimeException(
-    // "Deposit amount must be greater than minimum required: " + minSavingAmount);
-    // }
-    // if (difference.compareTo(balance) > 0) {
-    // throw new RuntimeException("Insufficient account balance");
-    // }
-
-    // // Cập nhật các trường
-    // savingTicketMapper.updateEntityFromDto(request, ticket);
-    // ticket.setActive(true);
-    // ticket.setBalance(request.getAmount());
-    // ticket.setMaturityDate(request.getStartDate().plusMonths(ticket.getDuration()));
-
-    // return savingTicketMapper.toDTO(savingTicketRepository.save(ticket));
-    // } catch (RuntimeException e) {
-    // throw new RuntimeException("Error updating saving ticket: " + e.getMessage(),
-    // e);
-    // }
-    // }
-
     @Transactional
     public void setSavingTicketActive(Long id, boolean isActive) {
         try {
@@ -170,24 +125,4 @@ public class SavingTicketService {
             throw new RuntimeException("Error updating menu status" + e.getMessage());
         }
     }
-
-    // @Transactional
-    // public void deleteSavingTicket(Long id) {
-    // try {
-    // SavingTicket savingTicket = savingTicketRepository.findById(id)
-    // .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
-
-    // if (savingTicket.getWithdrawalTickets() != null &&
-    // !savingTicket.getWithdrawalTickets().isEmpty()) {
-    // throw new RuntimeException(
-    // "Saving ticket cannot be deleted because it has withdrawal tickets associated
-    // with it.");
-    // }
-
-    // savingTicketRepository.delete(savingTicket);
-
-    // } catch (RuntimeException e) {
-    // throw new RuntimeException("Error deleting menu" + e.getMessage());
-    // }
-    // }
 }
