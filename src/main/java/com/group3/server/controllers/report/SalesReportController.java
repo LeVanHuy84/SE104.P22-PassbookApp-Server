@@ -25,8 +25,9 @@ import lombok.RequiredArgsConstructor;
 public class SalesReportController {
     private final SalesReportService salesReportService;
 
+    // Endpoint dành cho staff
     @GetMapping
-    public ResponseEntity<PageResponse<SalesReportResponse>> getSavingTickets(
+    public ResponseEntity<PageResponse<SalesReportResponse>> getSalesReports(
             @ModelAttribute SalesReportFilter filter,
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,

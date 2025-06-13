@@ -7,8 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +17,8 @@ import com.group3.server.dtos.Filter.SavingTicketFilter;
 import com.group3.server.dtos.responses.PageResponse;
 import com.group3.server.dtos.saving.SavingTicketRequest;
 import com.group3.server.dtos.saving.SavingTicketResponse;
-import com.group3.server.services.auth.UserService;
 import com.group3.server.services.saving.SavingTicketService;
+import com.group3.server.utils.AuthUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,8 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class SavingTicketController {
 
     private final SavingTicketService savingTicketService;
-    private final UserService userService;
 
+    //Endpoint dành cho staff
     @GetMapping
     public ResponseEntity<PageResponse<SavingTicketResponse>> getSavingTickets(
             @ModelAttribute SavingTicketFilter filter,
@@ -58,7 +56,8 @@ public class SavingTicketController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/customer") // customer
+    //Endpoint dành cho customer
+    @GetMapping("/customer")
     public ResponseEntity<PageResponse<SavingTicketResponse>> getSavingTicketsForCustomer(
             @ModelAttribute SavingTicketFilter filter,
             @RequestParam(defaultValue = "0") int page,
@@ -67,7 +66,7 @@ public class SavingTicketController {
             @RequestParam(defaultValue = "asc") String order) {
 
         // Lấy thông tin customer hiện tại
-        Long currentUserId = userService.getCurrentUserId();
+        Long currentUserId = AuthUtils.getCurrentUserId();
 
         // Bắt buộc filter theo customerId
         filter.setUserId(currentUserId);
@@ -88,28 +87,12 @@ public class SavingTicketController {
         return ResponseEntity.ok(response);
     }
 
+    // Đối với customer, userId sẽ được lấy từ Id của user
+    // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
     @PostMapping
     public ResponseEntity<SavingTicketResponse> createSavingTicket(@RequestBody SavingTicketRequest request) {
         SavingTicketResponse response = savingTicketService.createSavingTicket(request);
         return ResponseEntity.ok(response);
     }
 
-    // @PutMapping("/{id}")
-    // public ResponseEntity<SavingTicketResponse> updateSavingTicket(@PathVariable Long id,
-    //         @RequestBody SavingTicketRequest request) {
-    //     SavingTicketResponse response = savingTicketService.updateSavingTicket(id, request);
-    //     return ResponseEntity.ok(response);
-    // }
-
-    @PatchMapping("/active/{id}")
-    public ResponseEntity<Void> setSavingTicketActive(@PathVariable Long id, @RequestBody boolean isActive) {
-        savingTicketService.setSavingTicketActive(id, isActive);
-        return ResponseEntity.noContent().build();
-    }
-
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteSavingTicket(@PathVariable Long id) {
-    //     savingTicketService.deleteSavingTicket(id);
-    //     return ResponseEntity.noContent().build();
-    // }
 }

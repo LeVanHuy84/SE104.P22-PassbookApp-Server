@@ -1,5 +1,7 @@
 package com.group3.server.controllers.transaction;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.group3.server.dtos.Filter.TransactionFilter;
 import com.group3.server.dtos.responses.PageResponse;
-import com.group3.server.dtos.transaction.TransactionRequest;
 import com.group3.server.dtos.transaction.TransactionResponse;
-import com.group3.server.services.auth.UserService;
+import com.group3.server.models.transactions.enums.TransactionType;
 import com.group3.server.services.transaction.TransactionService;
+import com.group3.server.utils.AuthUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class TransactionController {
 
     private final TransactionService transactionService;
-    private final UserService userService;
 
+    // Endpoint cho staff
     @GetMapping
     public ResponseEntity<PageResponse<TransactionResponse>> getAllTransactions(
             @ModelAttribute TransactionFilter filter,
@@ -56,6 +58,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    // Endpoint cho customer
     @GetMapping("/customer")
     public ResponseEntity<PageResponse<TransactionResponse>> getTransactionsByCurrentUser(
             @ModelAttribute TransactionFilter filter,
@@ -64,7 +67,7 @@ public class TransactionController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String order) {
 
-        Long currentUserId = userService.getCurrentUserId();
+        Long currentUserId = AuthUtils.getCurrentUserId();
 
         filter.setUserId(currentUserId);
 
@@ -84,15 +87,19 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<TransactionResponse> createTransaction(@RequestBody TransactionRequest request) {
-        TransactionResponse response = transactionService.createTransaction(request);
+    // Endpoint cho staff/ customer
+    // Đối với customer, userId sẽ được lấy từ Id của user
+    // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
+    @PostMapping("/deposit")
+    public ResponseEntity<TransactionResponse> deposit(@RequestBody BigDecimal amount, Long userId) {
+        TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.DEPOSIT);
         return ResponseEntity.ok(response);
     }
 
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-    //     transactionService.deleteTransactionHistory(id);
-    //     return ResponseEntity.noContent().build();
-    // }
+    // Endpoint cho staff/ customer tương tự như deposit
+    @PostMapping("/withdrawal")
+    public ResponseEntity<TransactionResponse> withdrawal(@RequestBody BigDecimal amount, Long userId) {
+        TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.WITHDRAWAL);
+        return ResponseEntity.ok(response);
+    }
 }

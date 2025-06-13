@@ -12,18 +12,20 @@ import com.group3.server.services.system.ParameterService;
 
 import lombok.RequiredArgsConstructor;
 
-
+// Endpoint dành riêng cho admin
 @RestController
 @RequestMapping("/api/v1/parameters")
 @RequiredArgsConstructor
 public class ParameterController {
     private final ParameterService parameterService;
 
+    // Endpoint dành riêng cho admin
     @GetMapping
     public ParameterResponse getAllParameter() {
         return parameterService.getParameter();
     }
 
+    // Endpoint dành riêng cho admin
     @PostMapping
     public ParameterResponse updateParameter(@RequestBody ParameterRequest parameterRequest) {
         return parameterService.updateParameter(parameterRequest);

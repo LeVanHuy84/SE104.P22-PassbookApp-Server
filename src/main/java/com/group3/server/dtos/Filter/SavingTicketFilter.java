@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class SavingTicketFilter {
     private Long userId;
     private Long savingTypeId;
-    private Boolean isActive;
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
 

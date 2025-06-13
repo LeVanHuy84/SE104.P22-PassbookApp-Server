@@ -1,6 +1,5 @@
 package com.group3.server.dtos.auth;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,7 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +41,4 @@ public class RegisterRequest {
 
     @NotBlank
     private String address;
-
-    @Min(value = 100)
-    private BigDecimal balance;
-
 }

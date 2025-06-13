@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class WithdrawalController {
     private final WithdrawalTicketService withdrawalTicketService;
 
+    // Endpoint dành cho customer/staff
+    // Đối với customer, userId sẽ được lấy từ Id của user
+    // Đối với staff
     @PostMapping
     public ResponseEntity<WithdrawalTicketResponse> createWithdrawalTicket(@RequestBody WithdrawalTicketRequest request) {
         WithdrawalTicketResponse response = withdrawalTicketService.createWithdrawalTicket(request);

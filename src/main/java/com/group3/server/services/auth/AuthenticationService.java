@@ -74,7 +74,6 @@ public class AuthenticationService {
                     .dateOfBirth(request.getDateOfBirth())
                     .citizenID(request.getCitizenID())
                     .address(request.getAddress())
-                    .balance(request.getBalance())
                     .build();
 
             return TokenResponse.builder()

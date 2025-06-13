@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserResponse {
     private String username;
-    private String password;
     private String email;
     private String phone;
     private String fullname;

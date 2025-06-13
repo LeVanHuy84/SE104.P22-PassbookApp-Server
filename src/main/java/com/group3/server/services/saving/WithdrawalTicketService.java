@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.group3.server.dtos.saving.WithdrawalTicketRequest;
 import com.group3.server.dtos.saving.WithdrawalTicketResponse;
-import com.group3.server.dtos.transaction.TransactionRequest;
 import com.group3.server.mappers.saving.WithdrawalTicketMapper;
 import com.group3.server.models.saving.SavingTicket;
 import com.group3.server.models.saving.WithdrawalTicket;
@@ -110,13 +109,8 @@ public class WithdrawalTicketService {
             WithdrawalTicket savedTicket = withdrawalTicketRepository.save(ticket);
 
             // Tạo phiếu giao dịch chuyển tiền vào tài khoản
-            TransactionRequest transaction = TransactionRequest.builder()
-                    .userId(savingTicket.getUser().getId())
-                    .amount(actualAmount)
-                    .transactionType(TransactionType.WITHDRAW_SAVING)
-                    .build();
-
-            transactionService.createTransaction(transaction);
+            transactionService.createTransaction(actualAmount, savingTicket.getUser().getId(),
+                    TransactionType.WITHDRAW_SAVING);
 
             if(!request.getWithdrawalDate().toLocalDate().isEqual(LocalDate.now())) {
                 salesReportService.updateReportFromWithdrawalTicket(savedTicket);

@@ -12,7 +12,6 @@ import com.group3.server.dtos.Filter.SavingTicketFilter;
 import com.group3.server.dtos.Specification.SavingTicketSpecification;
 import com.group3.server.dtos.saving.SavingTicketRequest;
 import com.group3.server.dtos.saving.SavingTicketResponse;
-import com.group3.server.dtos.transaction.TransactionRequest;
 import com.group3.server.mappers.saving.SavingTicketMapper;
 import com.group3.server.models.auth.User;
 import com.group3.server.models.saving.SavingTicket;
@@ -91,13 +90,7 @@ public class SavingTicketService {
             ticket.setDuration(savingType.getDuration());
 
             // Tạo phiếu giao dịch
-            TransactionRequest transaction = TransactionRequest.builder()
-                    .userId(request.getUserId())
-                    .amount(request.getAmount())
-                    .transactionType(TransactionType.SAVE)
-                    .build();
-
-            transactionService.createTransaction(transaction);
+            transactionService.createTransaction(request.getAmount(), request.getUserId(), TransactionType.SAVE);
 
             // B8: Lưu saving ticket
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
@@ -109,20 +102,6 @@ public class SavingTicketService {
             return savingTicketMapper.toDTO(saved);
         } catch (RuntimeException e) {
             throw new RuntimeException("Error creating saving ticket: " + e.getMessage(), e);
-        }
-    }
-
-    @Transactional
-    public void setSavingTicketActive(Long id, boolean isActive) {
-        try {
-            SavingTicket savingTicket = savingTicketRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
-
-            savingTicket.setActive(isActive);
-
-            savingTicketRepository.save(savingTicket);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Error updating menu status" + e.getMessage());
         }
     }
 }
