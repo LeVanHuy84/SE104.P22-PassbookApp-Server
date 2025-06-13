@@ -1,32 +1,28 @@
 package com.group3.server.models.saving;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.group3.server.models.BaseModel;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "withdrawal_tickets")
 @NoArgsConstructor
 @AllArgsConstructor
-public class WithdrawalTicket {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class WithdrawalTicket extends BaseModel<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saving_ticket_id", nullable = false)
@@ -36,6 +32,4 @@ public class WithdrawalTicket {
     private BigDecimal withdrawalAmount;
 
     private BigDecimal actualAmount;
-
-    private LocalDateTime withdrawalDate;
 }

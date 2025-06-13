@@ -14,6 +14,7 @@ public class SavingTicketSpecification {
         return Specification
                 .where(hasUserId(filter.getUserId()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
+                .and(hasIsActive(filter.getIsActive()))
                 .and(hasAmountBetween(filter.getMinAmount(), filter.getMaxAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
@@ -29,6 +30,13 @@ public class SavingTicketSpecification {
         return (root, query, cb) -> {
             if (savingTypeId == null) return cb.conjunction();
             return cb.equal(root.get("savingType").get("id"), savingTypeId);
+        };
+    }
+
+    private static Specification<SavingTicket> hasIsActive(Boolean isActive) {
+        return (root, query, cb) -> {
+            if (isActive == null) return cb.conjunction();
+            return isActive ? cb.isTrue(root.get("isActive")) : cb.isFalse(root.get("isActive"));
         };
     }
 
@@ -49,12 +57,12 @@ public class SavingTicketSpecification {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();
             if (startDate != null && endDate != null) {
-                return cb.between(root.get("createdDate"), startDate, endDate);
+                return cb.between(root.get("createdAt"), startDate, endDate);
             }
             if (startDate != null) {
-                return cb.greaterThanOrEqualTo(root.get("createdDate"), startDate);
+                return cb.greaterThanOrEqualTo(root.get("createdAt"), startDate);
             }
-            return cb.lessThanOrEqualTo(root.get("createdDate"), endDate);
+            return cb.lessThanOrEqualTo(root.get("createdAt"), endDate);
         };
     }
 }

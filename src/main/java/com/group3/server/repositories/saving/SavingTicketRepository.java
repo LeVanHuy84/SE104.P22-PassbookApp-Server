@@ -11,6 +11,6 @@ import com.group3.server.models.saving.SavingTicket;
 public interface SavingTicketRepository extends JpaRepository<SavingTicket, Long>, JpaSpecificationExecutor<SavingTicket> {
     List<SavingTicket> findByUserId(Long userId);
 
-    List<SavingTicket> findAllByStartDateBetween(LocalDateTime start, LocalDateTime end);
+    List<SavingTicket> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
 }

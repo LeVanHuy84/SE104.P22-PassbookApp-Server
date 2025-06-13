@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class SavingTicketFilter {
     private Long userId;
     private Long savingTypeId;
+    private Boolean isActive; // coi phiếu đóng chưa (hết tiền tự đóng)
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
 

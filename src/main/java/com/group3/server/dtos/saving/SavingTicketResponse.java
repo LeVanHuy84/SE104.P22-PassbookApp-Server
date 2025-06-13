@@ -35,7 +35,7 @@ public class SavingTicketResponse {
 
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime startDate;
+    private LocalDateTime createdAt;
 
     private BigDecimal balance;
 

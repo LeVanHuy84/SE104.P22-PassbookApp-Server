@@ -7,34 +7,31 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.group3.server.models.BaseModel;
 import com.group3.server.models.auth.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "saving_tickets")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SavingTicket {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class SavingTicket extends BaseModel<Long>{
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -51,17 +48,14 @@ public class SavingTicket {
     @JsonManagedReference
     private List<WithdrawalTicket> withdrawalTickets = new ArrayList<>();
 
-    @Column(precision = 5, scale = 2) // Tổng 5 chữ số, 2 chữ số sau dấu phẩy
+    @Column(precision = 5, scale = 3) // Tổng 5 chữ số, 3 chữ số sau dấu phẩy
     private BigDecimal interestRate;
 
     private int duration;
     private BigDecimal amount;
-    private LocalDateTime startDate;
     private BigDecimal balance;
     private LocalDateTime maturityDate;
 
-    @Column(nullable = false)
     @Builder.Default
     private boolean isActive = true;
-
 }

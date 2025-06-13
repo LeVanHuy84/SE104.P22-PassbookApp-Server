@@ -36,10 +36,9 @@ public class SavingType {
     private String typeName;
     private int duration;
     
-    @Column(precision = 5, scale = 2) // Tổng 5 chữ số, 2 chữ số sau dấu phẩy
+    @Column(precision = 5, scale = 3) // Tổng 5 chữ số, 3 chữ số sau dấu phẩy
     private BigDecimal interestRate;
 
-    @Column(nullable = false)
     @Builder.Default
     private boolean isActive = true;
 

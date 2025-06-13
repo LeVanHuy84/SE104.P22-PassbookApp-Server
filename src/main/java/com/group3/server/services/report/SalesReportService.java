@@ -64,8 +64,8 @@ public class SalesReportService {
         LocalDateTime to = reportDate.atTime(LocalTime.MAX);
     
         // Lấy toàn bộ phiếu gửi và rút trong ngày
-        List<SavingTicket> savingTickets = savingTicketRepository.findAllByStartDateBetween(from, to);
-        List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByWithdrawalDateBetween(from, to);
+        List<SavingTicket> savingTickets = savingTicketRepository.findAllByCreatedAtBetween(from, to);
+        List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByCreatedAtBetween(from, to);
     
         // Gom thu theo loại sổ
         Map<Long, BigDecimal> incomeByType = savingTickets.stream()
@@ -110,58 +110,9 @@ public class SalesReportService {
         report.setDifference(report.getTotalIncome().subtract(report.getTotalExpense()));
         salesReportRepository.save(report); // cập nhật lần cuối
     }
-    
-
-    @Transactional
-    public void updateReportFromSavingTicket(SavingTicket savingTicket) {
-        LocalDate reportDate = savingTicket.getStartDate().toLocalDate();
-        try {
-            SalesReport report = salesReportRepository.findByReportDate(reportDate)
-                    .orElseThrow(() -> new RuntimeException("Sales report not found for date: " + reportDate));
-
-            report.setTotalIncome(report.getTotalIncome().add(savingTicket.getAmount()));
-            report.setDifference(report.getTotalIncome().subtract(report.getTotalExpense()));
-
-            SalesReportDetail detail = createOrUpdateDetail(
-                    report,
-                    savingTicket.getSavingType(),
-                    savingTicket.getAmount(),
-                    BigDecimal.ZERO);
-
-            salesReportRepository.save(report);
-            salesReportDetailRepository.save(detail);
-        } catch (RuntimeException e) {
-            log.warn("Recreating report for date {} due to: {}", reportDate, e.getMessage());
-            createDailyReport(reportDate);
-        }
-    }
-
-    @Transactional
-    public void updateReportFromWithdrawalTicket(WithdrawalTicket withdrawalTicket) {
-        LocalDate reportDate = withdrawalTicket.getWithdrawalDate().toLocalDate();
-        try {
-            SalesReport report = salesReportRepository.findByReportDate(reportDate)
-                    .orElseThrow(() -> new RuntimeException("Sales report not found for date: " + reportDate));
-
-            report.setTotalExpense(report.getTotalExpense().add(withdrawalTicket.getActualAmount()));
-            report.setDifference(report.getTotalIncome().subtract(report.getTotalExpense()));
-
-            SalesReportDetail detail = createOrUpdateDetail(
-                    report,
-                    withdrawalTicket.getSavingTicket().getSavingType(),
-                    BigDecimal.ZERO,
-                    withdrawalTicket.getActualAmount());
-
-            salesReportRepository.save(report);
-            salesReportDetailRepository.save(detail);
-        } catch (RuntimeException e) {
-            log.warn("Recreating report for date {} due to: {}", reportDate, e.getMessage());
-            createDailyReport(reportDate);
-        }
-    }
 
     private SalesReportDetail createOrUpdateDetail(SalesReport report, SavingType savingType,
-            BigDecimal incomeDelta, BigDecimal expenseDelta) {
+        BigDecimal incomeDelta, BigDecimal expenseDelta) {
 
         SalesReportDetail detail = salesReportDetailRepository
                 .findBySalesReportAndSavingType(report, savingType)

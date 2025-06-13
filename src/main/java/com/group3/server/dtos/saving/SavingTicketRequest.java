@@ -1,11 +1,6 @@
 package com.group3.server.dtos.saving;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,8 +22,4 @@ public class SavingTicketRequest {
 
     @NotNull(message="Amount of saving ticket is required")
     private BigDecimal amount;
-
-    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime startDate;
 }

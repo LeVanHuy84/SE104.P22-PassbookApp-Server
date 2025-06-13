@@ -1,7 +1,6 @@
 package com.group3.server.services.saving;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import com.group3.server.repositories.auth.UserRepository;
 import com.group3.server.repositories.saving.SavingTicketRepository;
 import com.group3.server.repositories.saving.SavingTypeRepository;
 import com.group3.server.repositories.system.ParameterRepository;
-import com.group3.server.services.report.SalesReportService;
 import com.group3.server.services.transaction.TransactionService;
 
 import jakarta.transaction.Transactional;
@@ -36,7 +34,6 @@ public class SavingTicketService {
     private final SavingTypeRepository savingTypeRepository;
     private final ParameterRepository parameterRepository;
     private final TransactionService transactionService;
-    private final SalesReportService salesReportService;
 
     public Page<SavingTicketResponse> getSavingTickets(SavingTicketFilter filter, Pageable pageable) {
         try {
@@ -55,13 +52,6 @@ public class SavingTicketService {
             User user = userRepository.findById(request.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             BigDecimal balance = user.getBalance();
-
-            // Kiểm tra ngày
-            if (request.getStartDate().toLocalDate().isAfter(LocalDate.now())) {
-                throw new RuntimeException("Start date cannot exceed current date");
-            } else if (request.getStartDate().toLocalDate().isBefore(LocalDate.now().minusDays(7))) {
-                throw new RuntimeException("Cannot create tickets more than 7 days ago");
-            }
 
             // B3: Đọc loại hình tiết kiệm
             SavingType savingType = savingTypeRepository.findById(request.getSavingTypeId())
@@ -84,7 +74,6 @@ public class SavingTicketService {
             ticket.setUser(user);
             ticket.setActive(true);
             ticket.setBalance(request.getAmount());
-            ticket.setMaturityDate(request.getStartDate().plusMonths(savingType.getDuration()));
             ticket.setSavingType(savingType);
             ticket.setInterestRate(savingType.getInterestRate());
             ticket.setDuration(savingType.getDuration());
@@ -95,9 +84,8 @@ public class SavingTicketService {
             // B8: Lưu saving ticket
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
 
-            if(!request.getStartDate().toLocalDate().isEqual(LocalDate.now())) {
-                salesReportService.updateReportFromSavingTicket(saved);
-            }
+            // B9: Tính ngày đáo hạn (sau khi createdAt được gán)
+            saved.setMaturityDate(saved.getCreatedAt().plusMonths(saved.getDuration()));
 
             return savingTicketMapper.toDTO(saved);
         } catch (RuntimeException e) {

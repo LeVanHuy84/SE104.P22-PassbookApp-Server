@@ -36,12 +36,12 @@ public class TransactionSpecification {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();
             if (startDate != null && endDate != null) {
-                return cb.between(root.get("transactionDateTime"), startDate, endDate);
+                return cb.between(root.get("createdAt"), startDate, endDate);
             }
             if (startDate != null) {
-                return cb.greaterThanOrEqualTo(root.get("transactionDateTime"), startDate);
+                return cb.greaterThanOrEqualTo(root.get("createdAt"), startDate);
             }
-            return cb.lessThanOrEqualTo(root.get("transactionDateTime"), endDate);
+            return cb.lessThanOrEqualTo(root.get("createdAt"), endDate);
         };
     }
 }
