@@ -91,14 +91,20 @@ public class TransactionController {
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
     @PostMapping("/deposit")
-    public ResponseEntity<TransactionResponse> deposit(@RequestBody BigDecimal amount, Long userId) {
+    public ResponseEntity<TransactionResponse> deposit(
+        @RequestBody BigDecimal amount,
+        @RequestParam Long userId
+    ){
         TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.DEPOSIT);
         return ResponseEntity.ok(response);
     }
 
     // Endpoint cho staff/ customer tương tự như deposit
     @PostMapping("/withdrawal")
-    public ResponseEntity<TransactionResponse> withdrawal(@RequestBody BigDecimal amount, Long userId) {
+    public ResponseEntity<TransactionResponse> withdrawal(
+        @RequestBody BigDecimal amount,
+        @RequestParam Long userId
+    ){
         TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.WITHDRAWAL);
         return ResponseEntity.ok(response);
     }

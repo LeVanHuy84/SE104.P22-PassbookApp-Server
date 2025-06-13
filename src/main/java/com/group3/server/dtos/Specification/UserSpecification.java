@@ -9,7 +9,7 @@ public class UserSpecification {
     public static Specification<User> withFilter(UserFilter filter) {
         return Specification
                 .where(hasFullNameLike(filter.getFullname()))
-                .and(hasCitizenId(filter.getCitizenId()));
+                .and(hasCitizenId(filter.getCitizenID()));
     }
 
     private static Specification<User> hasFullNameLike(String fullname) {
@@ -26,7 +26,7 @@ public class UserSpecification {
             if (citizenId == null || citizenId.isEmpty()) {
                 return cb.conjunction();
             }
-            return cb.equal(root.get("citizenId"), citizenId);
+            return cb.equal(root.get("citizenID"), citizenId);
         };
     }
 }

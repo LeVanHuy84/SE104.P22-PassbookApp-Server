@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserFilter {
     private String fullname;
-    private String citizenId;
+    private String citizenID;
 }

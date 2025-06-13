@@ -1,5 +1,6 @@
 package com.group3.server.dtos.auth;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -20,5 +21,5 @@ public class UserResponse {
     private LocalDate dateOfBirth;
     private String citizenID;
     private String address;
-    private double balance;
+    private BigDecimal balance;
 }
