@@ -86,7 +86,7 @@ public class TransactionService {
                     .user(user)
                     .amount(amount)
                     .transactionType(transactionType)
-                    //.status(TransactionStatus.COMPLETED) // Giả sử giao dịch thành công
+                    .remainingBalance(newBalance)
                     .build();
             TransactionHistory saved = transactionHistoryRepository.saveAndFlush(transaction);
 

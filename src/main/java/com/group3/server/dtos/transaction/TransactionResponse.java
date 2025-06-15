@@ -22,6 +22,7 @@ public class TransactionResponse {
     private Long userId;
     private String userFullname;
     private BigDecimal amount;
+    private BigDecimal remainingBalance;
     private TransactionType transactionType;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")

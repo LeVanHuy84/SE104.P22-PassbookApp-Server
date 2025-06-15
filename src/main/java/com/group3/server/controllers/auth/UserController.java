@@ -26,13 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
 
-    //Endpoint dành cho staff
-    @GetMapping("/find")
-    public ResponseEntity<List<UserResponse>> findUsers(@ModelAttribute UserFilter filter) {
-        return ResponseEntity.ok(userService.findUsers(filter));
-    }
-
-    //Endpoint dành cho admin
+    //Endpoint dành cho admin/staff
     @GetMapping
     public ResponseEntity<PageResponse<UserResponse>> getUsers(
             @ModelAttribute UserFilter filter,

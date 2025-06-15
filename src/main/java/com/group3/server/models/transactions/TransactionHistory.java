@@ -32,5 +32,6 @@ public class TransactionHistory extends BaseModel<Long>{
     private User user;  
 
     private BigDecimal amount;
+    private BigDecimal remainingBalance;
     private TransactionType transactionType;
 }

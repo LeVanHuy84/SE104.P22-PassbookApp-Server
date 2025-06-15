@@ -8,13 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.group3.server.dtos.Filter.SalesReportFilter;
-import com.group3.server.dtos.Specification.SalesReportSpecification;
 import com.group3.server.dtos.report.SalesReportResponse;
 import com.group3.server.mappers.report.SalesReportMapper;
 import com.group3.server.models.reports.SalesReport;
@@ -46,12 +41,11 @@ public class SalesReportService {
 
     private final SalesReportMapper salesReportMapper;
 
-    public Page<SalesReportResponse> getSalesReports(SalesReportFilter filter, Pageable pageable) {
+    public List<SalesReportResponse> getSalesReports(int month, int year) {
         try {
-            Specification<SalesReport> specification = SalesReportSpecification.withFilter(filter);
-            Page<SalesReport> reports = salesReportRepository.findAll(specification, pageable);
-    
-            return reports.map(salesReportMapper::toDTO);
+            LocalDate startDate = LocalDate.of(year, month, 1);
+            LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+            return salesReportMapper.toDTOs(salesReportRepository.findAllByReportDateBetween(startDate, endDate));
         } catch (RuntimeException e) {
             log.error("Error fetching sales-report", e);
             throw new RuntimeException("Error fetching sales-report", e);
