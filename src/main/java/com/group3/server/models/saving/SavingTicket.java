@@ -1,7 +1,7 @@
 package com.group3.server.models.saving;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class SavingTicket extends BaseModel<Long>{
     private int duration;
     private BigDecimal amount;
     private BigDecimal balance;
-    private LocalDateTime maturityDate;
+    private LocalDate maturityDate;
 
     @Builder.Default
     private boolean isActive = true;

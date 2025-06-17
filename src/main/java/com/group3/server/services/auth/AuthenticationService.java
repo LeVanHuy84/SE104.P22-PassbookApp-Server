@@ -34,27 +34,27 @@ public class AuthenticationService {
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             User user = userRepository.findByUsername(request.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Username: " + request.getUsername() + " not found"));
+                    .orElseThrow(() -> new RuntimeException("Tài khoản: " + request.getUsername() + " không tồn tại"));
             return TokenResponse.builder()
                     .accessToken(jwtService.generateToken(user))
                     .refreshToken("refresh_token")
                     .userId(user.getId())
                     .build();
         } catch (RuntimeException e) {
-            log.error("Error authenticate", e);
-            throw new RuntimeException("Error authenticate" + e.getMessage());
+            log.error("Lỗi xác thực", e);
+            throw new RuntimeException("Lỗi xác thực " + e.getMessage());
         }
     }
 
     public TokenResponse register(RegisterRequest request) {
         try {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-                throw new RuntimeException("Username: " + request.getUsername() + " has exist");
+                throw new RuntimeException("Tài khoản: " + request.getUsername() + " đã tồn tại");
             }
 
             // Lấy tuổi tối thiểu từ ParameterRepository
             int minAge = parameterRepository.findById(1L)
-                                            .orElseThrow(() -> new RuntimeException("Minimum age parameter not found"))
+                                            .orElseThrow(() -> new RuntimeException("Lỗi tham số hệ thống"))
                                             .getMinAge();
 
             // Tính tuổi của người dùng từ ngày sinh
@@ -62,7 +62,7 @@ public class AuthenticationService {
             int userAge = Period.between(birthDate, LocalDate.now()).getYears();
 
             if (userAge < minAge) {
-                throw new RuntimeException("User is under the minimum age of " + minAge);
+                throw new RuntimeException("Người dùng không được dưới " + minAge + " tuổi");
             }
             
             User newUser = User.builder()
@@ -83,7 +83,7 @@ public class AuthenticationService {
                     .build();
         } catch (RuntimeException e) {
             log.error("Register errors", e);
-            throw new RuntimeException("Register errors" + e.getMessage());
+            throw new RuntimeException("Lỗi đăng ký: " + e.getMessage());
         }
     }
 }

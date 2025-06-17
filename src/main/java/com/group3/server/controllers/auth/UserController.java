@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
 
+    //Endpoint dành cho customer
     @GetMapping("/my-info")
     public ResponseEntity<UserResponse> getMyInfo() {
         return ResponseEntity.ok(userService.getMyInfo());
@@ -54,5 +56,12 @@ public class UserController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    //Endpoint dành cho admin
+    @PutMapping("/active/{userId}")
+    public ResponseEntity<Void> setUserActive(@RequestParam Long userId, @RequestParam boolean active) {
+        userService.setUserActive(userId, active);
+        return ResponseEntity.ok().build();
     }
 }

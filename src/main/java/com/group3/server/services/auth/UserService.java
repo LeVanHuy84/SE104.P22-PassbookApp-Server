@@ -27,13 +27,13 @@ public class UserService {
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Tài khoảng không tồn tại"));
     }
 
     public UserResponse getMyInfo() {
         Long myId = AuthUtils.getCurrentUserId();
         User user = userRepository.findById(myId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Tài khoảng không tồn tại"));
         return userMapper.toDTO(user);
     }
 
@@ -45,13 +45,20 @@ public class UserService {
                 .toList();
     }
 
-        public Page<UserResponse> getUsers(UserFilter filter, Pageable pageable) {
+    public Page<UserResponse> getUsers(UserFilter filter, Pageable pageable) {
         try {
             Specification<User> specification = UserSpecification.withFilter(filter);
             Page<User> users = userRepository.findAll(specification, pageable);
             return users.map(userMapper::toDTO);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching saving tickets", e);
+            throw new RuntimeException("Lỗi truy cập danh sách tài khoản", e);
         }
+    }
+
+    public void setUserActive(Long userId, boolean active) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+        user.setActive(active);
+        userRepository.save(user);
     }
 }

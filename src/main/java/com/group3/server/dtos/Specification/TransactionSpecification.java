@@ -5,9 +5,13 @@ import com.group3.server.dtos.Filter.TransactionFilter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.group3.server.models.transactions.TransactionHistory;
 import com.group3.server.models.transactions.enums.TransactionType;
+
+import jakarta.persistence.criteria.Path;
 
 public class TransactionSpecification {
 
@@ -32,16 +36,24 @@ public class TransactionSpecification {
         };
     }
 
+    @SuppressWarnings("null")
     private static Specification<TransactionHistory> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();
+
+            Path<LocalDateTime> createdAt = root.get("createdAt");
+
             if (startDate != null && endDate != null) {
-                return cb.between(root.get("createdAt"), startDate, endDate);
+                return cb.between(
+                    createdAt,
+                    startDate.atStartOfDay(),
+                    endDate.atTime(LocalTime.MAX)
+                );
             }
             if (startDate != null) {
-                return cb.greaterThanOrEqualTo(root.get("createdAt"), startDate);
+                return cb.greaterThanOrEqualTo(createdAt, startDate.atStartOfDay());
             }
-            return cb.lessThanOrEqualTo(root.get("createdAt"), endDate);
+            return cb.lessThanOrEqualTo(createdAt, endDate.atTime(LocalTime.MAX));
         };
     }
 }

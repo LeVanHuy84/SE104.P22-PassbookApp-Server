@@ -48,7 +48,7 @@ public class SalesReportService {
             return salesReportMapper.toDTOs(salesReportRepository.findAllByReportDateBetween(startDate, endDate));
         } catch (RuntimeException e) {
             log.error("Error fetching sales-report", e);
-            throw new RuntimeException("Error fetching sales-report", e);
+            throw new RuntimeException("Lỗi truy cập báo cáo", e);
         }
     }
 

@@ -37,11 +37,11 @@ public class WithdrawalTicketService {
 
             // B3: Đọc D3 từ bộ nhớ - Tìm phiếu gửi tiết kiệm gốc
             SavingTicket savingTicket = savingTicketRepository.findById(request.getSavingTicketId())
-                    .orElseThrow(() -> new RuntimeException("Saving ticket not found"));
+                    .orElseThrow(() -> new RuntimeException("Phieu gửi tiết kiệm không tồn tại"));
 
             // B4: Kiểm tra trạng thái phiếu gửi đang hoạt động
             if (!savingTicket.isActive()) {
-                throw new RuntimeException("Saving ticket is not active");
+                throw new RuntimeException("Phiếu gửi tiết kiệm đã đóng, không thể rút tiền");
             }
 
             BigDecimal interest;
@@ -57,12 +57,12 @@ public class WithdrawalTicketService {
             if (updatedBalance.compareTo(BigDecimal.ZERO) == 0) {
                 savingTicket.setActive(false); // Đóng phiếu gửi
             } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
-                throw new RuntimeException("Withdrawal amount exceeds balance plus interest");
+                throw new RuntimeException("Số tiền rút vượt quá số dư hiện tại");
             }
 
             // B5: Kiểm tra loại tiết kiệm
             if (savingTicket.getDuration() != 0) { // B5.1: Có kỳ hạn
-                LocalDate maturityDate = savingTicket.getMaturityDate().toLocalDate();
+                LocalDate maturityDate = savingTicket.getMaturityDate();
                 if (withdrawalDate.isBefore(maturityDate)) {
                     // B5.1.1: Ngày rút trước hạn -> tính theo không kỳ hạn
                     long daysSent = ChronoUnit.DAYS.between(openDate, withdrawalDate); // B5.1.2
@@ -108,7 +108,7 @@ public class WithdrawalTicketService {
             return withdrawalTicketMapper.toDTO(savedTicket);
 
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error creating withdrawal ticket: " + e.getMessage());
+            throw new RuntimeException("Lỗi: " + e.getMessage());
         }
         // B11 + B12: Đóng kết nối + Kết thúc (được @Transactional quản lý tự động)
     }

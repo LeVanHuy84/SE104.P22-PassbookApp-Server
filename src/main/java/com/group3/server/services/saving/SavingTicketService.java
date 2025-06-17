@@ -1,6 +1,7 @@
 package com.group3.server.services.saving;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class SavingTicketService {
             Page<SavingTicket> tickets = savingTicketRepository.findAll(specification, pageable);
             return tickets.map(savingTicketMapper::toDTO);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching saving tickets", e);
+            throw new RuntimeException("Lỗi truy cập danh sách phiếu gửi tiết kiệm", e);
         }
     }
 
@@ -50,12 +51,12 @@ public class SavingTicketService {
         try {
             // B2: Lấy số dư tài khoản
             User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
             BigDecimal balance = user.getBalance();
 
             // B3: Đọc loại hình tiết kiệm
             SavingType savingType = savingTypeRepository.findById(request.getSavingTypeId())
-                    .orElseThrow(() -> new RuntimeException("Saving type not found"));
+                    .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
 
             // B4: Kiểm tra loại hình tiết kiệm hợp lệ
             // (thực ra ở trên findById đã throw nếu không tìm thấy rồi)
@@ -63,10 +64,10 @@ public class SavingTicketService {
             // B5: Kiểm tra số tiền gửi
             BigDecimal minSavingAmount = parameterRepository.findById(1L).orElseThrow().getMinSavingAmount();
             if (request.getAmount().compareTo(minSavingAmount) < 0) {
-                throw new RuntimeException("Deposit amount must be greater than minimum required: " + minSavingAmount);
+                throw new RuntimeException("Số tiền gửi tối thiểu là: " + minSavingAmount + " VNĐ");
             }
             if (request.getAmount().compareTo(balance) > 0) {
-                throw new RuntimeException("Insufficient account balance");
+                throw new RuntimeException("Tài khoản không đủ số dư để gửi tiết kiệm");
             }
 
             // B7: Set thông tin cho saving ticket
@@ -85,11 +86,12 @@ public class SavingTicketService {
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
 
             // B9: Tính ngày đáo hạn (sau khi createdAt được gán)
-            saved.setMaturityDate(saved.getCreatedAt().plusMonths(saved.getDuration()));
+            LocalDate maturityDate = saved.getCreatedAt().toLocalDate().plusMonths(saved.getDuration());
+            saved.setMaturityDate(maturityDate);
 
             return savingTicketMapper.toDTO(saved);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error creating saving ticket: " + e.getMessage(), e);
+            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
         }
     }
 }

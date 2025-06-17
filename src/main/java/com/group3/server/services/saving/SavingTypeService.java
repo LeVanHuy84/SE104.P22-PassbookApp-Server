@@ -24,7 +24,7 @@ public class SavingTypeService {
         try {
             return savingTypeMapper.toDTOs(savingTypeRepository.findByIsActiveTrue());
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching saving types", e);
+            throw new RuntimeException("Lỗi truy cập danh sách loại tiết kiệm", e);
         }
     }
 
@@ -32,7 +32,7 @@ public class SavingTypeService {
         try {
             return savingTypeMapper.toDTOs(savingTypeRepository.findByIsActiveFalse());
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching saving types", e);
+            throw new RuntimeException("Lỗi truy cập danh sách loại tiết kiệm đã vô hiệu", e);
         }
     }
 
@@ -43,7 +43,7 @@ public class SavingTypeService {
             newType.setActive(true);
             return savingTypeMapper.toDTO(savingTypeRepository.save(newType));
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error creating saving type" + e.getMessage());
+            throw new RuntimeException("Lỗi tạo mới loại tiết kiệm" + e.getMessage());
         }
     }
 
@@ -52,11 +52,11 @@ public class SavingTypeService {
     public SavingTypeResponse updateSavingType(Long id, SavingTypeRequest request) {
         try {
             SavingType existing = savingTypeRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Saving type not found"));
+                    .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
             savingTypeMapper.updateEntityFromDto(request, existing);
             return savingTypeMapper.toDTO(savingTypeRepository.save(existing));
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error updating saving type" + e.getMessage());
+            throw new RuntimeException("Lỗi: " + e.getMessage());
         }
     }
 
@@ -64,13 +64,13 @@ public class SavingTypeService {
     public void setSavingTypeActive(Long id, boolean isActive) {
         try {
             SavingType savingType = savingTypeRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Saving type not found"));
+                    .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
             savingType.setActive(isActive);
 
             // Nếu muốn ngắt liên kết các saving ticket khi disable type, xử lý ở đây
             savingTypeRepository.save(savingType);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error updating saving type status", e);
+            throw new RuntimeException("Lỗi: "+ e.getMessage(), e);
         }
     }
 
@@ -78,15 +78,15 @@ public class SavingTypeService {
     public void deleteSavingType(Long id) {
         try {
             SavingType savingType = savingTypeRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Saving type not found"));
+                    .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
 
             if (savingType.getSavingTickets() != null && !savingType.getSavingTickets().isEmpty()) {
-                throw new RuntimeException("Saving type cannot be deleted because it has saving tickets associated with it.");
+                throw new RuntimeException("Không thể xóa loại tiết kiệm này vì nó đang được sử dụng trong các phiếu gửi tiết kiệm");
             }
 
             savingTypeRepository.delete(savingType);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error deleting saving type", e);
+            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
         }
     }
 }

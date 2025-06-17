@@ -36,7 +36,7 @@ public class TransactionService {
             Page<TransactionHistory> tickets = transactionHistoryRepository.findAll(specification, pageable);
             return tickets.map(transactionMapper::toDTO);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching saving tickets", e);
+            throw new RuntimeException("Lỗi truy cập danh sách lịch sử giao dịch", e);
         }
     }
 
@@ -55,14 +55,14 @@ public class TransactionService {
             // B5: Kiểm tra số tiền tối thiểu
             if (amount.compareTo(minTransactionAmount) < 0) {
                 throw new RuntimeException(
-                        "Transaction amount must be greater than or equal to minimum required amount");
+                        "Số tiền giao dịch phải lớn hơn hoặc bằng: " + minTransactionAmount + " VNĐ");
             } else if (amount.compareTo(maxTransactionAmount) > 0) {
                 throw new RuntimeException(
-                        "Transaction amount must be less than or equal to maximum required amount");
+                        "Số tiền giao dịch tối đa là: " + maxTransactionAmount + " VNĐ");
             }
 
             // B7: Tính số dư mới
-            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             BigDecimal currentBalance = user.getBalance();
             BigDecimal newBalance;
 
@@ -70,11 +70,11 @@ public class TransactionService {
                 case DEPOSIT, WITHDRAW_SAVING -> newBalance = currentBalance.add(amount);
                 case WITHDRAWAL, SAVE -> {
                     if (currentBalance.compareTo(amount) < 0) {
-                        throw new RuntimeException("Insufficient balance for withdrawal");
+                        throw new RuntimeException("Số dư không đủ để thực hiện giao dịch");
                     }
                     newBalance = currentBalance.subtract(amount);
                 }
-                default -> throw new RuntimeException("Unsupported transaction type");
+                default -> throw new RuntimeException("Loại giao dịch không hợp lệ: " + transactionType);
             }
 
             // Cập nhật lại số dư user (bạn tự viết trong userService cho chuẩn nhé)
@@ -95,7 +95,7 @@ public class TransactionService {
 
         } catch (RuntimeException e) {
             // B10: Đóng kết nối CSDL tự động khi lỗi xảy ra
-            throw new RuntimeException("Error creating transaction: " + e.getMessage(), e);
+            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
         }
         // B11: Kết thúc (tự động rollback hoặc commit)
     }

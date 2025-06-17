@@ -23,7 +23,7 @@ public class ParameterService {
         try {
             return parameterMapper.toDTO(parameterRepository.findById(1L).orElseThrow());
         } catch(RuntimeException e) {
-            throw new RuntimeException("Error fetching parameter" + e.getMessage());
+            throw new RuntimeException("Lỗi truy cập tham số hệ thống" + e.getMessage());
         }
     }
 
@@ -37,7 +37,7 @@ public class ParameterService {
 
             parameterRepository.saveAndFlush(entity);
         } catch(RuntimeException e) {
-            throw new RuntimeException("Error fetching parameter" + e.getMessage());
+            throw new RuntimeException("Lỗi tạo tham số hệ thống" + e.getMessage());
         }
     }
 
@@ -47,7 +47,7 @@ public class ParameterService {
             parameterMapper.updateEntityFromDto(request, entity);
             return parameterMapper.toDTO(parameterRepository.saveAndFlush(entity));
         } catch(RuntimeException e) {
-            throw new RuntimeException("Error fetching parameter" + e.getMessage());
+            throw new RuntimeException("Lỗi cập nhật tham số hệ thống" + e.getMessage());
         }
     }
 }
