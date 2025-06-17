@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,7 +61,7 @@ public class UserController {
 
     //Endpoint dành cho admin
     @PutMapping("/active/{userId}")
-    public ResponseEntity<Void> setUserActive(@RequestParam Long userId, @RequestParam boolean active) {
+    public ResponseEntity<Void> setUserActive(@PathVariable Long userId, @RequestParam boolean active) {
         userService.setUserActive(userId, active);
         return ResponseEntity.ok().build();
     }
