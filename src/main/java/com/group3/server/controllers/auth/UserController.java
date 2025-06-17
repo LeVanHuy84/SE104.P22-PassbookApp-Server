@@ -1,7 +1,5 @@
 package com.group3.server.controllers.auth;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +23,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/my-info")
+    public ResponseEntity<UserResponse> getMyInfo() {
+        return ResponseEntity.ok(userService.getMyInfo());
+    }
 
     //Endpoint dành cho admin/staff
     @GetMapping

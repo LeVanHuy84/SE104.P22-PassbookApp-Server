@@ -14,6 +14,7 @@ import com.group3.server.dtos.auth.UserResponse;
 import com.group3.server.mappers.auth.UserMapper;
 import com.group3.server.models.auth.User;
 import com.group3.server.repositories.auth.UserRepository;
+import com.group3.server.utils.AuthUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +28,13 @@ public class UserService {
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public UserResponse getMyInfo() {
+        Long myId = AuthUtils.getCurrentUserId();
+        User user = userRepository.findById(myId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toDTO(user);
     }
 
     public List<UserResponse> findUsers(UserFilter filter) {
