@@ -21,13 +21,4 @@ public class SalesReportScheduler {
         LocalDate yesterday = LocalDate.now().minusDays(1); // Báo cáo cho ngày hôm qua
         reportGeneratorService.createDailyReport(yesterday);
     }
-
-    @Scheduled(cron = "0 10 0 1 * *")
-    public void runMonthlyScheduler() {
-        LocalDate lastMonth = LocalDate.now().minusMonths(1); // Lấy tháng trước
-        // Lấy tháng và năm từ ngày tháng trước
-        int month = lastMonth.getMonthValue();
-        int year = lastMonth.getYear();
-        reportGeneratorService.createMonthlyReport(month, year);
-    }
 }

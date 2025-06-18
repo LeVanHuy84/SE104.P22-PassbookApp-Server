@@ -26,66 +26,68 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReportGeneratorService {
 
-    private final DailyReportRepository dailyReportRepository;
-    private final MonthlyReportRepository monthlyReportRepository;
-    private final SavingTicketRepository savingTicketRepository;
-    private final WithdrawalTicketRepository withdrawalTicketRepository;
+        private final DailyReportRepository dailyReportRepository;
+        private final MonthlyReportRepository monthlyReportRepository;
+        private final SavingTicketRepository savingTicketRepository;
+        private final WithdrawalTicketRepository withdrawalTicketRepository;
 
-    @Transactional
-    public void createDailyReport(LocalDate reportDate) {
-        LocalDateTime from = reportDate.atStartOfDay();
-        LocalDateTime to = reportDate.atTime(LocalTime.MAX);
-    
-        List<SavingTicket> savingTickets = savingTicketRepository.findAllByCreatedAtBetween(from, to);
-        List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByCreatedAtBetween(from, to);
+        @Transactional
+        public void createDailyReport(LocalDate reportDate) {
+                LocalDateTime from = reportDate.atStartOfDay();
+                LocalDateTime to = reportDate.atTime(LocalTime.MAX);
 
-        BigDecimal totalIncome = savingTickets.stream()
-                .map(SavingTicket::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                List<SavingTicket> savingTickets = savingTicketRepository.findAllByCreatedAtBetween(from, to);
+                List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByCreatedAtBetween(from,
+                                to);
 
-        BigDecimal totalExpense = withdrawalTickets.stream()
-                .map(WithdrawalTicket::getActualAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        BigDecimal difference = totalIncome.subtract(totalExpense);
+                BigDecimal totalIncome = savingTickets.stream()
+                                .map(SavingTicket::getAmount)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        DailyReport dailyReport = DailyReport.builder()
-                .reportDate(reportDate)
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .difference(difference)
-                .build();
+                BigDecimal totalExpense = withdrawalTickets.stream()
+                                .map(WithdrawalTicket::getActualAmount)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        dailyReportRepository.save(dailyReport);
-        log.info("Daily report created for date: {}", reportDate);
-    }
+                BigDecimal difference = totalIncome.subtract(totalExpense);
 
+                DailyReport dailyReport = DailyReport.builder()
+                                .reportDate(reportDate)
+                                .totalIncome(totalIncome)
+                                .totalExpense(totalExpense)
+                                .difference(difference)
+                                .build();
 
-    @Transactional
-    public void createMonthlyReport(int month, int year) {
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+                dailyReportRepository.save(dailyReport);
+                calculateMonthlyReport(dailyReport);
+                log.info("Daily report created for date: {}", reportDate);
+        }
 
-        List<DailyReport> dailyReports = dailyReportRepository.findAllByReportDateBetween(startDate, endDate);
+        @Transactional
+        public void calculateMonthlyReport(DailyReport dailyReport) {
+                LocalDate startDate = dailyReport.getReportDate().withDayOfMonth(1);
 
-        BigDecimal totalIncome = dailyReports.stream()
-                .map(DailyReport::getTotalIncome)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        BigDecimal totalExpense = dailyReports.stream()
-                .map(DailyReport::getTotalExpense)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // Tìm báo cáo tháng, nếu không có thì tạo mới
+                MonthlyReport existingReport = monthlyReportRepository.findById(startDate)
+                                .orElseGet(() -> {
+                                        MonthlyReport newReport = MonthlyReport.builder()
+                                                        .reportMonth(startDate)
+                                                        .totalIncome(BigDecimal.ZERO)
+                                                        .totalExpense(BigDecimal.ZERO)
+                                                        .difference(BigDecimal.ZERO)
+                                                        .build();
 
-        BigDecimal difference = totalIncome.subtract(totalExpense);
+                                        log.info("Monthly report created for month: " + startDate);
+                                        return monthlyReportRepository.save(newReport);
+                                });
 
-        MonthlyReport monthlyReport = MonthlyReport.builder()
-                .reportMonth(startDate)
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .difference(difference)
-                .build();
+                // Cập nhật thu, chi, chênh lệch
+                existingReport.setTotalIncome(existingReport.getTotalIncome().add(dailyReport.getTotalIncome()));
+                existingReport.setTotalExpense(existingReport.getTotalExpense().add(dailyReport.getTotalExpense()));
+                existingReport.setDifference(
+                                existingReport.getTotalIncome().subtract(existingReport.getTotalExpense()));
 
-        monthlyReportRepository.save(monthlyReport);
-        log.info("Monthly report created for month: {}-{}", month, year);
-    }
+                // Lưu lại
+                monthlyReportRepository.save(existingReport);
+        }
+
 }
