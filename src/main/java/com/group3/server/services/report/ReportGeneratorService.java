@@ -66,17 +66,14 @@ public class ReportGeneratorService {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
-        List<SavingTicket> savingTickets = savingTicketRepository.findAllByCreatedAtBetween(
-                startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
-        List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByCreatedAtBetween(
-                startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+        List<DailyReport> dailyReports = dailyReportRepository.findAllByReportDateBetween(startDate, endDate);
 
-        BigDecimal totalIncome = savingTickets.stream()
-                .map(SavingTicket::getAmount)
+        BigDecimal totalIncome = dailyReports.stream()
+                .map(DailyReport::getTotalIncome)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal totalExpense = withdrawalTickets.stream()
-                .map(WithdrawalTicket::getActualAmount)
+        
+        BigDecimal totalExpense = dailyReports.stream()
+                .map(DailyReport::getTotalExpense)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal difference = totalIncome.subtract(totalExpense);
