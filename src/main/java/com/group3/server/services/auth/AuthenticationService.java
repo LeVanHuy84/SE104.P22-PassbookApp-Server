@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,8 @@ public class AuthenticationService {
         redisTokenService.storeAccessToken(user.getUsername(), accessToken);
         redisTokenService.storeRefreshToken(user.getUsername(), refreshToken);
 
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).build();
+        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId())
+                .permissions(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()).build();
     }
 
     public TokenResponse authenticate(LoginRequest request) {
@@ -93,7 +95,9 @@ public class AuthenticationService {
         redisTokenService.blacklistToken(oldAccessToken, TokenType.ACCESS);
 
         return TokenResponse.builder().accessToken(jwtService.generateAccessToken(user)).refreshToken(refreshToken)
-                .userId(user.getId()).build();
+                .userId(user.getId())
+                .permissions(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .build();
 
     }
 
