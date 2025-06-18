@@ -43,6 +43,11 @@ public class TransactionService {
     @Transactional
     public TransactionResponse createTransaction(BigDecimal amount, Long userId, TransactionType transactionType) {
         try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+            if(!user.isActive()) {
+                throw new RuntimeException("Tài khoản người dùng đã bị khóa");
+            }
+
             // B3: Đọc D3 từ bộ nhớ
             Parameter parameter = parameterRepository.findById(1L).orElseThrow();
             BigDecimal minTransactionAmount = parameter.getMinTransactionAmount();
@@ -62,7 +67,6 @@ public class TransactionService {
             }
 
             // B7: Tính số dư mới
-            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             BigDecimal currentBalance = user.getBalance();
             BigDecimal newBalance;
 

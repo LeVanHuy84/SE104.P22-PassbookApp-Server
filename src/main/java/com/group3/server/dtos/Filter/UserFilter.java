@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class UserFilter {
     private String fullname;
     private String citizenID;
+    private boolean isActive;
 }

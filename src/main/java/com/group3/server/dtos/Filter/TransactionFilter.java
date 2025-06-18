@@ -1,5 +1,6 @@
 package com.group3.server.dtos.Filter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 public class TransactionFilter {
     private Long userId;
     private TransactionType transactionType;
+    private BigDecimal amount;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")

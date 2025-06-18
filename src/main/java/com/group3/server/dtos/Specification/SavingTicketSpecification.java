@@ -1,5 +1,6 @@
 package com.group3.server.dtos.Specification;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,6 +19,7 @@ public class SavingTicketSpecification {
                 .where(hasUserId(filter.getUserId()))
                 .and(hasCitizenId(filter.getCitizenId()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
+                .and(hasAmount(filter.getAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
@@ -42,7 +44,13 @@ public class SavingTicketSpecification {
         };
     }
 
-    @SuppressWarnings("null")
+    private static Specification<SavingTicket> hasAmount(BigDecimal amount) {
+        return (root, query, cb) -> {
+            if (amount == null) return cb.conjunction();
+            return cb.equal(root.get("amount"), amount);
+        };
+    }
+
     private static Specification<SavingTicket> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();

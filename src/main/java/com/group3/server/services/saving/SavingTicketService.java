@@ -54,6 +54,11 @@ public class SavingTicketService {
                     .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
             BigDecimal balance = user.getBalance();
 
+            // Kiểm tra tài khoản có bị khóa không
+            if (!user.isActive()) {
+                throw new RuntimeException("Tài khoản người dùng đã bị khóa");
+            }
+
             // B3: Đọc loại hình tiết kiệm
             SavingType savingType = savingTypeRepository.findById(request.getSavingTypeId())
                     .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
@@ -79,11 +84,11 @@ public class SavingTicketService {
             ticket.setInterestRate(savingType.getInterestRate());
             ticket.setDuration(savingType.getDuration());
 
-            // Tạo phiếu giao dịch
-            transactionService.createTransaction(request.getAmount(), request.getUserId(), TransactionType.SAVE);
-
             // B8: Lưu saving ticket
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
+
+            // Tạo phiếu giao dịch
+            transactionService.createTransaction(request.getAmount(), request.getUserId(), TransactionType.SAVE);
 
             // B9: Tính ngày đáo hạn (sau khi createdAt được gán)
             LocalDate maturityDate = saved.getCreatedAt().toLocalDate().plusMonths(saved.getDuration());

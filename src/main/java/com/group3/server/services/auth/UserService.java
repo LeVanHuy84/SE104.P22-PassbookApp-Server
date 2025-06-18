@@ -1,7 +1,5 @@
 package com.group3.server.services.auth;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,14 +33,6 @@ public class UserService {
         User user = userRepository.findById(myId)
                 .orElseThrow(() -> new RuntimeException("Tài khoảng không tồn tại"));
         return userMapper.toDTO(user);
-    }
-
-    public List<UserResponse> findUsers(UserFilter filter) {
-        Specification<User> specification = UserSpecification.withFilter(filter);
-        return userRepository.findAll(specification)
-                .stream()
-                .map(userMapper::toDTO)
-                .toList();
     }
 
     public Page<UserResponse> getUsers(UserFilter filter, Pageable pageable) {

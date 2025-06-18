@@ -39,6 +39,10 @@ public class WithdrawalTicketService {
             SavingTicket savingTicket = savingTicketRepository.findById(request.getSavingTicketId())
                     .orElseThrow(() -> new RuntimeException("Phieu gửi tiết kiệm không tồn tại"));
 
+            if(savingTicket.getUser().isActive() == false) {
+                throw new RuntimeException("Tài khoản người dùng đã bị khóa");
+            }
+
             // B4: Kiểm tra trạng thái phiếu gửi đang hoạt động
             if (!savingTicket.isActive()) {
                 throw new RuntimeException("Phiếu gửi tiết kiệm đã đóng, không thể rút tiền");

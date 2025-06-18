@@ -92,13 +92,13 @@ public class AppConfig {
                         .build();
 
                 SavingType threeMonths = SavingType.builder()
-                        .typeName("3 tháng")
+                        .typeName("Kỳ hạn ngắn")
                         .duration(3) // 3 tháng
                         .interestRate(new BigDecimal("0.05"))
                         .build();
 
                 SavingType sixMonths = SavingType.builder()
-                        .typeName("6 tháng")
+                        .typeName("Kỳ hạn trung bình")
                         .duration(6) // 6 tháng
                         .interestRate(new BigDecimal("0.055"))
                         .build();

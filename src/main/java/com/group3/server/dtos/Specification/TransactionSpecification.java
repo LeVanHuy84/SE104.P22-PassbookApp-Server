@@ -4,6 +4,7 @@ import com.group3.server.dtos.Filter.TransactionFilter;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,6 +20,7 @@ public class TransactionSpecification {
         return Specification
                 .where(hasUserId(filter.getUserId()))
                 .and(hasTransactionType(filter.getTransactionType()))
+                .and(hasAmount(filter.getAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
@@ -36,7 +38,13 @@ public class TransactionSpecification {
         };
     }
 
-    @SuppressWarnings("null")
+    private static Specification<TransactionHistory> hasAmount(BigDecimal amount) {
+        return (root, query, cb) -> {
+            if (amount == null) return cb.conjunction();
+            return cb.equal(root.get("amount"), amount);
+        };
+    }
+    
     private static Specification<TransactionHistory> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();
