@@ -65,8 +65,8 @@ public class AuthenticationService {
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
                 throw new RuntimeException("Email: " + request.getEmail() + " has exist");
             }
-            Group group = groupRepository.findByName("USER")
-                    .orElseThrow(() -> new RuntimeException("Default group 'USER' not found"));
+            Group group = groupRepository.findByName("CUSTOMER")
+                    .orElseThrow(() -> new RuntimeException("Default group 'CUSTOMER' not found"));
 
             User user = userRepository.save(User.builder().password(encoder.encode(request.getPassword()))
                     .email(request.getEmail()).phone(request.getPhone()).fullName(request.getFullName())
