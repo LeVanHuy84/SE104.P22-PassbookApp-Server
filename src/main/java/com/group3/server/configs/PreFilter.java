@@ -2,6 +2,8 @@ package com.group3.server.configs;
 
 import java.io.IOException;
 
+import com.group3.server.services.auth.RedisTokenService;
+import com.group3.server.utils.TokenType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PreFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
+    private final RedisTokenService redisTokenService;
 
     @Override
     protected void doFilterInternal(
@@ -41,11 +44,11 @@ public class PreFilter extends OncePerRequestFilter {
             return;
         }
         String jwt = authorization.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        final String username = jwtService.extractUsername(jwt, TokenType.ACCESS);
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(username);
-            if(jwtService.isValidToken(jwt, userDetails)) {
+            if(jwtService.isValidToken(jwt, userDetails, TokenType.ACCESS) && !redisTokenService.isTokenBlacklisted(jwt)) {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

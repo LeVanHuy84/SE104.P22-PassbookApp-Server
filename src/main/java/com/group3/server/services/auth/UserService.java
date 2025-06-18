@@ -24,8 +24,8 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Tài khoảng không tồn tại"));
+        return email -> userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
     }
 
     public UserResponse getMyInfo() {

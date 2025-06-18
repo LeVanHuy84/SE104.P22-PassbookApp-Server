@@ -43,12 +43,12 @@ public class AppConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**") // Cho phép tất cả URL
-                        .allowedOrigins("*") // Cho phép mọi domain
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Cho phép các HTTP method
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(false)
                         .allowedHeaders("*"); // Cho phép tất cả headers
-
+                        
             }
         };
     }
@@ -70,12 +70,12 @@ public class AppConfig {
     @Bean
     public CommandLineRunner commandLineRunner() {
         return arg -> {
-            User admin = userRepository.findByUsername("admin").orElse(null);
+            User admin = userRepository.findByEmail("admin@passbookapp.com").orElse(null);
             if (admin == null) {
                 User user = User.builder()
-                        .username("admin")
+                        .email("admin@passbookapp.com")
                         .password(passwordEncoder().encode("123456"))
-                        .fullname("ADMIN")
+                        .fullName("ADMIN")
                         .build();
                 Parameter parameter = Parameter.builder()
                         .minAge(15)

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.group3.server.models.BaseModel;
 import com.group3.server.models.saving.SavingTicket;
 import com.group3.server.models.transactions.TransactionHistory;
 
@@ -20,6 +20,10 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -35,13 +39,16 @@ import lombok.Setter;
 @Entity
 @Builder
 @Table(name = "users")
-public class User extends BaseModel<Long> implements UserDetails {
+public class User implements UserDetails {
 
-    private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String password;
     private String email;
     private String phone;
-    private String fullname;
+    private String fullName;
     private LocalDate dateOfBirth;
     private String citizenID;
     private String address;
@@ -63,32 +70,38 @@ public class User extends BaseModel<Long> implements UserDetails {
     @Builder.Default
     private boolean isActive = true;
 
-    @OneToMany(mappedBy = "user")
-    @Builder.Default
-    private Set<GroupUser> groupUsers = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Group group;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return group.getPermissions().stream().
+                map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                .toList();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
         return isActive;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }

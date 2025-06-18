@@ -3,12 +3,7 @@ package com.group3.server.models.auth;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.group3.server.models.BaseModel;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +15,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "groups")
-public class Group extends BaseModel<Integer> {
+public class Group {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     private String name;
     private String description;
 
-    @OneToOne
-    private Role role;
-
-    @OneToMany(mappedBy = "group")
-    private Set<GroupUser> groupUsers = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "group_permissions",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 
 }
