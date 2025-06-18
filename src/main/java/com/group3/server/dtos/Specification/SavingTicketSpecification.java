@@ -1,6 +1,5 @@
 package com.group3.server.dtos.Specification;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -17,9 +16,8 @@ public class SavingTicketSpecification {
     public static Specification<SavingTicket> withFilter(SavingTicketFilter filter) {
         return Specification
                 .where(hasUserId(filter.getUserId()))
+                .and(hasCitizenId(filter.getCitizenId()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
-                .and(hasIsActive(filter.getIsActive()))
-                .and(hasAmountBetween(filter.getMinAmount(), filter.getMaxAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
@@ -30,30 +28,17 @@ public class SavingTicketSpecification {
         };
     }
 
+        private static Specification<SavingTicket> hasCitizenId(Long citizenId) {
+        return (root, query, cb) -> {
+            if (citizenId == null) return cb.conjunction();
+            return cb.equal(root.get("user").get("citizenID"), citizenId);
+        };
+    }
+
     private static Specification<SavingTicket> hasSavingTypeId(Long savingTypeId) {
         return (root, query, cb) -> {
             if (savingTypeId == null) return cb.conjunction();
             return cb.equal(root.get("savingType").get("id"), savingTypeId);
-        };
-    }
-
-    private static Specification<SavingTicket> hasIsActive(Boolean isActive) {
-        return (root, query, cb) -> {
-            if (isActive == null) return cb.conjunction();
-            return isActive ? cb.isTrue(root.get("isActive")) : cb.isFalse(root.get("isActive"));
-        };
-    }
-
-    private static Specification<SavingTicket> hasAmountBetween(BigDecimal min, BigDecimal max) {
-        return (root, query, cb) -> {
-            if (min == null && max == null) return cb.conjunction();
-            if (min != null && max != null) {
-                return cb.between(root.get("amount"), min, max);
-            }
-            if (min != null) {
-                return cb.greaterThanOrEqualTo(root.get("amount"), min);
-            }
-            return cb.lessThanOrEqualTo(root.get("amount"), max);
         };
     }
 

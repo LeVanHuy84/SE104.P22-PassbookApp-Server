@@ -1,6 +1,5 @@
 package com.group3.server.dtos.Filter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,11 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SavingTicketFilter {
-    private Long userId;
+    private Long userId; // id của user, không phải citizenID
+    private Long citizenId;
     private Long savingTypeId;
-    private Boolean isActive; // coi phiếu đóng chưa (hết tiền tự đóng)
-    private BigDecimal minAmount;
-    private BigDecimal maxAmount;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")

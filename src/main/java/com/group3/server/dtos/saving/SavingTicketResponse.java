@@ -24,6 +24,7 @@ public class SavingTicketResponse {
     private Long id;
 
     private Long userId;
+    private String citizenId;
     private String userFullname;
 
     private Long savingTypeId;
