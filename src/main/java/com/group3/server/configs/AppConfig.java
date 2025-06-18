@@ -47,7 +47,7 @@ public class AppConfig {
                         .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(false)
-                        .allowedHeaders("*"); // Cho phép tất cả headers
+                        .allowedHeaders("*");
                         
             }
         };

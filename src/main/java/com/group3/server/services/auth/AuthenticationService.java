@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +38,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final RedisTokenService redisTokenService;
     private final MailService mailService;
+    private final ParameterRepository parameterRepository;
 
     private TokenResponse generateAndStoreTokens(User user) {
         String accessToken = jwtService.generateAccessToken(user);
@@ -65,6 +69,7 @@ public class AuthenticationService {
         try {
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
                 throw new RuntimeException("Email: " + request.getEmail() + " has exist");
+            }
 
             // Lấy tuổi tối thiểu từ ParameterRepository
             int minAge = parameterRepository.findById(1L)
@@ -80,8 +85,6 @@ public class AuthenticationService {
             }
             Group group = groupRepository.findByName("USER")
                     .orElseThrow(() -> new RuntimeException("Default group 'USER' not found"));
-
-            
 
             User user = userRepository.save(User.builder().password(encoder.encode(request.getPassword()))
                     .email(request.getEmail()).phone(request.getPhone()).fullName(request.getFullName())

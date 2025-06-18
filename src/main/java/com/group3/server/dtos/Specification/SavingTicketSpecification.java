@@ -51,6 +51,7 @@ public class SavingTicketSpecification {
         };
     }
 
+    @SuppressWarnings("null")
     private static Specification<SavingTicket> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();

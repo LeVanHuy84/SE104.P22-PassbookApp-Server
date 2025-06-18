@@ -45,6 +45,7 @@ public class TransactionSpecification {
         };
     }
     
+    @SuppressWarnings("null")
     private static Specification<TransactionHistory> hasBetweenDate(LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             if (startDate == null && endDate == null) return cb.conjunction();
