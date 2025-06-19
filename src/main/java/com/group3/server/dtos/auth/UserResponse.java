@@ -2,6 +2,7 @@ package com.group3.server.dtos.auth;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,4 +24,5 @@ public class UserResponse {
     private String citizenID;
     private String address;
     private BigDecimal balance;
+    private LocalDateTime createdAt;
 }
