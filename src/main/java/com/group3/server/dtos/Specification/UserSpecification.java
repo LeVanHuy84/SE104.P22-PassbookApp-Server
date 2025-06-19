@@ -10,7 +10,8 @@ public class UserSpecification {
         return Specification
                 .where(hasFullNameLike(filter.getFullname()))
                 .and(hasCitizenId(filter.getCitizenID()))
-                .and(hasActive(filter.getIsActive()));
+                .and(hasActive(filter.getIsActive()))
+                .and(hasGroupId(filter.getGroupId()));
     }
 
     private static Specification<User> hasFullNameLike(String fullname) {
@@ -41,6 +42,15 @@ public class UserSpecification {
             } else {
                 return cb.isFalse(root.get("isActive"));
             }
+        };
+    }
+
+    private static Specification<User> hasGroupId(Integer groupId) {
+        return (root, query, cb) -> {
+            if (groupId == null) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.join("group").get("id"), groupId);
         };
     }
 }
