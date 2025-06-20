@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SavingTicketRequest {
-    @NotNull(message="User id is required")
-    private Long userId;
+    @NotNull(message="Citizen ID is required")
+    private String citizenID;
 
     @NotNull(message="Saving type id is required")
     private Long savingTypeId;

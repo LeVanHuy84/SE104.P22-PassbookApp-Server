@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class UserFilter {
     private String fullname;
     private String citizenID;
-    private Integer groupId;
+    private String groupName;
     private Boolean isActive;
 }

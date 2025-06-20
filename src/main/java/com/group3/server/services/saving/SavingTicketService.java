@@ -50,7 +50,7 @@ public class SavingTicketService {
     public SavingTicketResponse createSavingTicket(SavingTicketRequest request) {
         try {
             // B2: Lấy số dư tài khoản
-            User user = userRepository.findById(request.getUserId())
+            User user = userRepository.findByCitizenID(request.getCitizenID())
                     .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
             BigDecimal balance = user.getBalance();
 
@@ -88,15 +88,20 @@ public class SavingTicketService {
             SavingTicket saved = savingTicketRepository.saveAndFlush(ticket);
 
             // Tạo phiếu giao dịch
-            transactionService.createTransaction(request.getAmount(), request.getUserId(), TransactionType.SAVE);
+            transactionService.createTransaction(request.getAmount(), user.getId(), TransactionType.SAVE);
 
             // B9: Tính ngày đáo hạn (sau khi createdAt được gán)
-            LocalDate maturityDate = saved.getCreatedAt().toLocalDate().plusMonths(saved.getDuration());
-            saved.setMaturityDate(maturityDate);
+            if (ticket.getDuration() != 0) {
+                LocalDate maturityDate = saved.getCreatedAt().toLocalDate().plusMonths(saved.getDuration());
+                saved.setMaturityDate(maturityDate);
+            } else {
+                // Nếu là loại tiết kiệm không kỳ hạn, ngày đáo hạn là null
+                ticket.setMaturityDate(null);
+            }
 
             return savingTicketMapper.toDTO(saved);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

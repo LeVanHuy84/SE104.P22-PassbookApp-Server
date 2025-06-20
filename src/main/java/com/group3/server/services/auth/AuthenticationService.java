@@ -67,10 +67,6 @@ public class AuthenticationService {
 
     public TokenResponse register(RegisterRequest request) {
         try {
-            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new RuntimeException("Email: " + request.getEmail() + " has exist");
-            }
-
             // Lấy tuổi tối thiểu từ ParameterRepository
             int minAge = parameterRepository.findById(1L)
                                             .orElseThrow(() -> new RuntimeException("Lỗi tham số hệ thống"))
@@ -162,6 +158,9 @@ public class AuthenticationService {
     }
 
     public void sendOtp(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email: " + email + " đã được đăng ký");
+        }
         String subject = "Xác thực tài khoản";
         String otp = EmailUtil.generateOtp();
         String body = "Mã xác thực tài khoản của bạn là " + otp;

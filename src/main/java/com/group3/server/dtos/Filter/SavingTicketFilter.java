@@ -17,8 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SavingTicketFilter {
-    private Long userId; // id của user, không phải citizenID
-    private Long citizenId;
+    private String citizenID;
     private Long savingTypeId;
     private BigDecimal amount;
 

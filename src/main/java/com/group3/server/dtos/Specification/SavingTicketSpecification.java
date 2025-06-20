@@ -16,24 +16,16 @@ public class SavingTicketSpecification {
 
     public static Specification<SavingTicket> withFilter(SavingTicketFilter filter) {
         return Specification
-                .where(hasUserId(filter.getUserId()))
-                .and(hasCitizenId(filter.getCitizenId()))
+                .where(hasCitizenID(filter.getCitizenID()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
                 .and(hasAmount(filter.getAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
-    private static Specification<SavingTicket> hasUserId(Long userId) {
+        private static Specification<SavingTicket> hasCitizenID(String citizenID) {
         return (root, query, cb) -> {
-            if (userId == null) return cb.conjunction();
-            return cb.equal(root.get("user").get("id"), userId);
-        };
-    }
-
-        private static Specification<SavingTicket> hasCitizenId(Long citizenId) {
-        return (root, query, cb) -> {
-            if (citizenId == null) return cb.conjunction();
-            return cb.equal(root.get("user").get("citizenID"), citizenId);
+            if (citizenID == null) return cb.conjunction();
+            return cb.equal(root.get("user").get("citizenID"), citizenID);
         };
     }
 

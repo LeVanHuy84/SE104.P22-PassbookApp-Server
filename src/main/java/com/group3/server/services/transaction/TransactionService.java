@@ -60,10 +60,10 @@ public class TransactionService {
             // B5: Kiểm tra số tiền tối thiểu
             if (amount.compareTo(minTransactionAmount) < 0) {
                 throw new RuntimeException(
-                        "Số tiền giao dịch phải lớn hơn hoặc bằng: " + minTransactionAmount + " VNĐ");
+                        "Hạn mức giao dịch tối thiểu là: " + minTransactionAmount + " VNĐ");
             } else if (amount.compareTo(maxTransactionAmount) > 0) {
                 throw new RuntimeException(
-                        "Số tiền giao dịch tối đa là: " + maxTransactionAmount + " VNĐ");
+                        "Hạn mức giao dịch tối đa là: " + maxTransactionAmount + " VNĐ");
             }
 
             // B7: Tính số dư mới
@@ -99,7 +99,7 @@ public class TransactionService {
 
         } catch (RuntimeException e) {
             // B10: Đóng kết nối CSDL tự động khi lỗi xảy ra
-            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
         // B11: Kết thúc (tự động rollback hoặc commit)
     }

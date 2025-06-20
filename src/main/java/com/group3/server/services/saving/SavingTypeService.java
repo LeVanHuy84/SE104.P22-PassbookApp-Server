@@ -53,10 +53,21 @@ public class SavingTypeService {
         try {
             SavingType existing = savingTypeRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
+            
+            if (existing.getDuration() == 0) {
+                // Không cho sửa duration và name
+                if (!request.getTypeName().equals(existing.getTypeName())) {
+                    throw new RuntimeException("Không thể sửa tên của loại tiết kiệm không kỳ hạn.");
+                }
+                if (request.getDuration() != 0) {
+                    throw new RuntimeException("Không thể thay đổi thời hạn của loại tiết kiệm không kỳ hạn.");
+                }
+            }
+            
             savingTypeMapper.updateEntityFromDto(request, existing);
             return savingTypeMapper.toDTO(savingTypeRepository.save(existing));
         } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -70,7 +81,7 @@ public class SavingTypeService {
             // Nếu muốn ngắt liên kết các saving ticket khi disable type, xử lý ở đây
             savingTypeRepository.save(savingType);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi: "+ e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -86,7 +97,7 @@ public class SavingTypeService {
 
             savingTypeRepository.delete(savingType);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi: " + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

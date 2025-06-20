@@ -11,7 +11,7 @@ import com.group3.server.models.transactions.TransactionHistory;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TransactionMapper{
-    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.citizenID", target = "citizenID")
     @Mapping(source = "user.fullName", target = "userFullname")
     TransactionResponse toDTO(TransactionHistory entity);
 

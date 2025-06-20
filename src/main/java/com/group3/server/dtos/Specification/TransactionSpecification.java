@@ -1,14 +1,13 @@
 package com.group3.server.dtos.Specification;
 
-import com.group3.server.dtos.Filter.TransactionFilter;
-
-import org.springframework.data.jpa.domain.Specification;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import org.springframework.data.jpa.domain.Specification;
+
+import com.group3.server.dtos.Filter.TransactionFilter;
 import com.group3.server.models.transactions.TransactionHistory;
 import com.group3.server.models.transactions.enums.TransactionType;
 
@@ -18,16 +17,16 @@ public class TransactionSpecification {
 
     public static Specification<TransactionHistory> withFilter(TransactionFilter filter) {
         return Specification
-                .where(hasUserId(filter.getUserId()))
+                .where(hasCitizenID(filter.getCitizenID()))
                 .and(hasTransactionType(filter.getTransactionType()))
                 .and(hasAmount(filter.getAmount()))
                 .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
     }
 
-    private static Specification<TransactionHistory> hasUserId(Long userId) {
+    private static Specification<TransactionHistory> hasCitizenID(String citizenID) {
         return (root, query, cb) -> {
-            if (userId == null) return cb.conjunction();
-            return cb.equal(root.get("user").get("id"), userId);
+            if (citizenID == null) return cb.conjunction();
+            return cb.equal(root.get("user").get("citizenID"), citizenID);
         };
     }
 

@@ -66,10 +66,10 @@ public class SavingTicketController {
             @RequestParam(defaultValue = "asc") String order) {
 
         // Lấy thông tin customer hiện tại
-        Long currentUserId = AuthUtils.getCurrentUserId();
+        String currentCitizenID = AuthUtils.getCurrentCitizenID();
 
         // Bắt buộc filter theo customerId
-        filter.setUserId(currentUserId);
+        filter.setCitizenID(currentCitizenID);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
         Page<SavingTicketResponse> tickets = savingTicketService.getSavingTickets(filter, pageable);

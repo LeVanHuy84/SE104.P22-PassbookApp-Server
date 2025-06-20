@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class TransactionFilter {
-    private Long userId;
+    private String citizenID;
     private TransactionType transactionType;
     private BigDecimal amount;
 

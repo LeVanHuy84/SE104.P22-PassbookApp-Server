@@ -19,4 +19,10 @@ public class AuthUtils {
         User userDetails = (User) auth.getPrincipal();
         return userDetails.getBalance(); // id của user hiện tại
     }
+
+    public static String getCurrentCitizenID() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User userDetails = (User) auth.getPrincipal();
+        return userDetails.getCitizenID();
+    }
 }

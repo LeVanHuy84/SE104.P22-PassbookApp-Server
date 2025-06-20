@@ -3,20 +3,13 @@ package com.group3.server.models.auth;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.group3.server.models.saving.SavingTicket;
-import com.group3.server.models.transactions.TransactionHistory;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,7 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,21 +42,14 @@ public class User implements UserDetails {
     private String phone;
     private String fullName;
     private LocalDate dateOfBirth;
+
+    @Column(unique = true, nullable = false)
     private String citizenID;
+
     private String address;
 
     @Builder.Default
     private BigDecimal balance = new BigDecimal(0);
-
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<TransactionHistory> transactionHistories = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<SavingTicket> savingTickets = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;

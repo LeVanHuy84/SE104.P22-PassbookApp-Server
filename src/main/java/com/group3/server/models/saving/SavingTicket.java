@@ -59,7 +59,7 @@ public class SavingTicket{
     @JsonManagedReference
     private List<WithdrawalTicket> withdrawalTickets = new ArrayList<>();
 
-    @Column(precision = 5, scale = 3) // Tổng 5 chữ số, 3 chữ số sau dấu phẩy
+    @Column(precision = 6, scale = 4)
     private BigDecimal interestRate;
 
     private int duration;

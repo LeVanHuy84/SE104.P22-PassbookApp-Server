@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,9 +68,9 @@ public class TransactionController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String order) {
 
-        Long currentUserId = AuthUtils.getCurrentUserId();
+        String currentCitizenID = AuthUtils.getCurrentCitizenID();
 
-        filter.setUserId(currentUserId);
+        filter.setCitizenID(currentCitizenID);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
         Page<TransactionResponse> transactions = transactionService.getTransactionHistories(filter, pageable);
@@ -90,20 +91,20 @@ public class TransactionController {
     // Endpoint cho staff/ customer
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
-    @PostMapping("/deposit")
+    @PostMapping("/deposit/{userId}")
     public ResponseEntity<TransactionResponse> deposit(
-        @RequestBody BigDecimal amount,
-        @RequestParam Long userId
+        @PathVariable Long userId,        
+        @RequestBody BigDecimal amount
     ){
         TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.DEPOSIT);
         return ResponseEntity.ok(response);
     }
 
     // Endpoint cho staff/ customer tương tự như deposit
-    @PostMapping("/withdrawal")
+    @PostMapping("/withdraw/{userId}")
     public ResponseEntity<TransactionResponse> withdrawal(
-        @RequestBody BigDecimal amount,
-        @RequestParam Long userId
+        @PathVariable Long userId,        
+        @RequestBody BigDecimal amount
     ){
         TransactionResponse response = transactionService.createTransaction(amount, userId, TransactionType.WITHDRAWAL);
         return ResponseEntity.ok(response);

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TransactionResponse {
     private Long id;
-    private Long userId;
+    private Long citizenID;
     private String userFullname;
     private BigDecimal amount;
     private BigDecimal remainingBalance;

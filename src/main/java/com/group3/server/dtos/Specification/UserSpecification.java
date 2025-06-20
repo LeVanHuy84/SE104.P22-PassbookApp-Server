@@ -11,7 +11,7 @@ public class UserSpecification {
                 .where(hasFullNameLike(filter.getFullname()))
                 .and(hasCitizenId(filter.getCitizenID()))
                 .and(hasActive(filter.getIsActive()))
-                .and(hasGroupId(filter.getGroupId()));
+                .and(hasGroupName(filter.getGroupName()));
     }
 
     private static Specification<User> hasFullNameLike(String fullname) {
@@ -45,12 +45,14 @@ public class UserSpecification {
         };
     }
 
-    private static Specification<User> hasGroupId(Integer groupId) {
+    private static Specification<User> hasGroupName(String groupName) {
         return (root, query, cb) -> {
-            if (groupId == null) {
-                return cb.conjunction();
+            if (groupName == null || groupName.isBlank()) {
+                // Lọc tất cả user có group.name khác ADMIN
+                return cb.notEqual(root.join("group").get("name"), "ADMIN");
             }
-            return cb.equal(root.join("group").get("id"), groupId);
+            return cb.equal(root.join("group").get("name"), groupName);
         };
     }
+
 }

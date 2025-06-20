@@ -37,7 +37,7 @@ public class WithdrawalTicketService {
 
             // B3: Đọc D3 từ bộ nhớ - Tìm phiếu gửi tiết kiệm gốc
             SavingTicket savingTicket = savingTicketRepository.findById(request.getSavingTicketId())
-                    .orElseThrow(() -> new RuntimeException("Phieu gửi tiết kiệm không tồn tại"));
+                    .orElseThrow(() -> new RuntimeException("Phiếu gửi tiết kiệm không tồn tại"));
 
             if(savingTicket.getUser().isActive() == false) {
                 throw new RuntimeException("Tài khoản người dùng đã bị khóa");
@@ -56,13 +56,6 @@ public class WithdrawalTicketService {
             BigDecimal nonTermInterestRate = savingTypeRepository.findByDuration(0).getInterestRate(); // Lãi suất không
 
             updatedBalance = balance.subtract(request.getWithdrawalAmount());
-
-            // Kiểm tra nếu số dư còn lại bằng 0 -> trạng thái = đóng
-            if (updatedBalance.compareTo(BigDecimal.ZERO) == 0) {
-                savingTicket.setActive(false); // Đóng phiếu gửi
-            } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
-                throw new RuntimeException("Số tiền rút vượt quá số dư hiện tại");
-            }
 
             // B5: Kiểm tra loại tiết kiệm
             if (savingTicket.getDuration() != 0) { // B5.1: Có kỳ hạn
@@ -95,6 +88,13 @@ public class WithdrawalTicketService {
 
             // B8: Nếu không thỏa 1 trong các điều kiện thì qua B11 (đã xử lý ở trên bằng
             // throw)
+
+            // Kiểm tra nếu số dư còn lại bằng 0 -> trạng thái = đóng
+            if (updatedBalance.compareTo(BigDecimal.ZERO) == 0) {
+                savingTicket.setActive(false); // Đóng phiếu gửi
+            } else if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("Số tiền rút vượt quá số dư hiện tại");
+            }
 
             // B9: Lưu D4 xuống bộ nhớ phụ (lưu WithdrawalTicket vào DB)
             WithdrawalTicket ticket = withdrawalTicketMapper.toEntity(request);

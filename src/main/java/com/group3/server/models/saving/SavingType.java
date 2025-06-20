@@ -35,7 +35,7 @@ public class SavingType {
     private String typeName;
     private int duration;
     
-    @Column(precision = 5, scale = 3) // Tổng 5 chữ số, 3 chữ số sau dấu phẩy
+    @Column(precision = 6, scale = 4) // Tổng 6 chữ số, 4 chữ số sau dấu phẩy
     private BigDecimal interestRate;
 
     @Builder.Default
