@@ -4,15 +4,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.group3.server.models.reports.DailyReport;
-import com.group3.server.models.reports.MonthlyReport;
+import com.group3.server.models.reports.MonthlyReportDetail;
 import com.group3.server.models.saving.SavingTicket;
+import com.group3.server.models.saving.SavingType;
 import com.group3.server.models.saving.WithdrawalTicket;
-import com.group3.server.repositories.report.DailyReportRepository;
 import com.group3.server.repositories.report.MonthlyReportRepository;
 import com.group3.server.repositories.saving.SavingTicketRepository;
 import com.group3.server.repositories.saving.WithdrawalTicketRepository;
@@ -26,68 +30,65 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReportGeneratorService {
 
-        private final DailyReportRepository dailyReportRepository;
         private final MonthlyReportRepository monthlyReportRepository;
         private final SavingTicketRepository savingTicketRepository;
         private final WithdrawalTicketRepository withdrawalTicketRepository;
 
         @Transactional
-        public void createDailyReport(LocalDate reportDate) {
-                LocalDateTime from = reportDate.atStartOfDay();
-                LocalDateTime to = reportDate.atTime(LocalTime.MAX);
+        public void createMonthlyReport(LocalDate reportDate) {
+                LocalDate startOfMonth = reportDate.withDayOfMonth(1);
+                LocalDateTime from = startOfMonth.atStartOfDay();
+                LocalDateTime to = startOfMonth.withDayOfMonth(reportDate.lengthOfMonth()).atTime(LocalTime.MAX);
 
+                // 1. Lấy tất cả SavingTicket trong tháng
                 List<SavingTicket> savingTickets = savingTicketRepository.findAllByCreatedAtBetween(from, to);
+
+                // 2. Lấy tất cả WithdrawalTicket trong tháng
                 List<WithdrawalTicket> withdrawalTickets = withdrawalTicketRepository.findAllByCreatedAtBetween(from,
                                 to);
 
-                BigDecimal totalIncome = savingTickets.stream()
-                                .map(SavingTicket::getAmount)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // 3. Tính totalIncome theo savingType
+                Map<SavingType, BigDecimal> incomeByType = savingTickets.stream()
+                                .collect(Collectors.groupingBy(
+                                                SavingTicket::getSavingType,
+                                                Collectors.mapping(SavingTicket::getAmount,
+                                                                Collectors.reducing(BigDecimal.ZERO,
+                                                                                BigDecimal::add))));
 
-                BigDecimal totalExpense = withdrawalTickets.stream()
-                                .map(WithdrawalTicket::getActualAmount)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // 4. Tính totalExpense theo savingType (thông qua savingTicket)
+                Map<SavingType, BigDecimal> expenseByType = withdrawalTickets.stream()
+                                .collect(Collectors.groupingBy(
+                                                wt -> wt.getSavingTicket().getSavingType(),
+                                                Collectors.mapping(WithdrawalTicket::getActualAmount,
+                                                                Collectors.reducing(BigDecimal.ZERO,
+                                                                                BigDecimal::add))));
 
-                BigDecimal difference = totalIncome.subtract(totalExpense);
+                // 5. Tập hợp tất cả các savingType xuất hiện
+                Set<SavingType> allTypes = new HashSet<>();
+                allTypes.addAll(incomeByType.keySet());
+                allTypes.addAll(expenseByType.keySet());
 
-                DailyReport dailyReport = DailyReport.builder()
-                                .reportDate(reportDate)
-                                .totalIncome(totalIncome)
-                                .totalExpense(totalExpense)
-                                .difference(difference)
-                                .build();
+                // 6. Tạo list MonthlyReportDetail theo từng savingType
+                List<MonthlyReportDetail> reports = new ArrayList<>();
 
-                dailyReportRepository.save(dailyReport);
-                calculateMonthlyReport(dailyReport);
-                log.info("Daily report created for date: {}", reportDate);
-        }
+                for (SavingType type : allTypes) {
+                        BigDecimal totalIncome = incomeByType.getOrDefault(type, BigDecimal.ZERO);
+                        BigDecimal totalExpense = expenseByType.getOrDefault(type, BigDecimal.ZERO);
+                        BigDecimal difference = totalIncome.subtract(totalExpense);
 
-        @Transactional
-        public void calculateMonthlyReport(DailyReport dailyReport) {
-                LocalDate startDate = dailyReport.getReportDate().withDayOfMonth(1);
+                        MonthlyReportDetail report = MonthlyReportDetail.builder()
+                                        .reportMonth(startOfMonth)
+                                        .savingType(type)
+                                        .totalIncome(totalIncome)
+                                        .totalExpense(totalExpense)
+                                        .difference(difference)
+                                        .build();
 
-                // Tìm báo cáo tháng, nếu không có thì tạo mới
-                MonthlyReport existingReport = monthlyReportRepository.findById(startDate)
-                                .orElseGet(() -> {
-                                        MonthlyReport newReport = MonthlyReport.builder()
-                                                        .reportMonth(startDate)
-                                                        .totalIncome(BigDecimal.ZERO)
-                                                        .totalExpense(BigDecimal.ZERO)
-                                                        .difference(BigDecimal.ZERO)
-                                                        .build();
+                        reports.add(report);
+                }
 
-                                        log.info("Monthly report created for month: " + startDate);
-                                        return monthlyReportRepository.save(newReport);
-                                });
-
-                // Cập nhật thu, chi, chênh lệch
-                existingReport.setTotalIncome(existingReport.getTotalIncome().add(dailyReport.getTotalIncome()));
-                existingReport.setTotalExpense(existingReport.getTotalExpense().add(dailyReport.getTotalExpense()));
-                existingReport.setDifference(
-                                existingReport.getTotalIncome().subtract(existingReport.getTotalExpense()));
-
-                // Lưu lại
-                monthlyReportRepository.save(existingReport);
+                monthlyReportRepository.saveAll(reports);
+                log.info("Monthly report created for {}", startOfMonth);
         }
 
 }

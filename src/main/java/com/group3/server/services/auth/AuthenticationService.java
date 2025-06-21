@@ -104,7 +104,7 @@ public class AuthenticationService {
                 || !refreshToken.equals(redisTokenService.getToken(username, TokenType.REFRESH))
                 || redisTokenService.isTokenBlacklisted(refreshToken)) {
             log.error("Invalid refresh token");
-            throw new RuntimeException("Lỗi token");
+            throw new RuntimeException("Lỗi refresh token");
         }
 
         String oldAccessToken = redisTokenService.getToken(user.getUsername(), TokenType.ACCESS);
@@ -121,7 +121,7 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(token, TokenType.ACCESS);
         if (!token.equals(redisTokenService.getToken(username, TokenType.ACCESS))) {
             log.error("Invalid access token");
-            throw new RuntimeException("Lỗi token");
+            throw new RuntimeException("Lỗi access token");
         }
 
         String accessToken = redisTokenService.getToken(username, TokenType.ACCESS);

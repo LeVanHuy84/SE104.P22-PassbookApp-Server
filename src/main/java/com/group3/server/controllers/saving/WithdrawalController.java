@@ -24,7 +24,7 @@ public class WithdrawalController {
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff
     @PostMapping
-    @PreAuthorize("hasAuthority('CREATE_WITHDRAWAL_TICKET')")
+    @PreAuthorize("hasAuthority('CREATE_WITHDRAWALTICKET')")
     public ResponseEntity<WithdrawalTicketResponse> createWithdrawalTicket(@RequestBody WithdrawalTicketRequest request) {
         WithdrawalTicketResponse response = withdrawalTicketService.createWithdrawalTicket(request);
         return ResponseEntity.ok(response);

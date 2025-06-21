@@ -48,10 +48,10 @@ public class UserService {
         }
     }
 
-    public void setUserActive(Long userId, boolean active) {
+    public void setUserActive(Long userId, boolean isActive) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
-        user.setActive(active);
+        user.setActive(isActive);
         userRepository.save(user);
     }
 

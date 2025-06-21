@@ -103,6 +103,8 @@ VALUES (1, 'ADMIN', 'Quản trị viên'),
 -- Insert group_permissions last (depends on both groups and permissions)
 INSERT INTO group_permissions (group_id, permission_id)
 VALUES -- ADMIN permissions
+    (1, 1),
+    (1, 2),
     (1, 20),
     -- CUSTOMER permissions
     (2, 3),
@@ -115,7 +117,6 @@ VALUES -- ADMIN permissions
     (2, 21),
     -- MANAGER permissions
     (3, 1),
-    (3, 2),
     (3, 3),
     (3, 4),
     (3, 5),
@@ -137,6 +138,7 @@ VALUES -- ADMIN permissions
     (4, 3),
     (4, 10),
     (4, 12),
+    (4, 13),
     (4, 13),
     (4, 14),
     (4, 16),

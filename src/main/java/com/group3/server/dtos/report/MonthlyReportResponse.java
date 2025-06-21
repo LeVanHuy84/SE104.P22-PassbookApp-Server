@@ -2,6 +2,7 @@ package com.group3.server.dtos.report;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,8 +19,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MonthlyReportResponse {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate reportMonth;
+
+    private List<MonthlyReportDetailResponse> monthlyReportDetails;
 
     private BigDecimal totalIncome;
     private BigDecimal totalExpense;

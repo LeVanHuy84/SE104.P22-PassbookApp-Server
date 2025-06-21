@@ -16,7 +16,7 @@ public class UserSpecification {
 
     private static Specification<User> hasFullNameLike(String fullname) {
         return (root, query, cb) -> {
-            if (fullname == null || fullname.isEmpty()) {
+            if (fullname == null || fullname.isBlank()) {
                 return cb.conjunction();
             }
             return cb.like(cb.lower(root.get("fullname")), "%" + fullname.toLowerCase() + "%");
@@ -25,7 +25,7 @@ public class UserSpecification {
 
     private static Specification<User> hasCitizenId(String citizenId) {
         return (root, query, cb) -> {
-            if (citizenId == null || citizenId.isEmpty()) {
+            if (citizenId == null || citizenId.isBlank()) {
                 return cb.conjunction();
             }
             return cb.equal(root.get("citizenID"), citizenId);

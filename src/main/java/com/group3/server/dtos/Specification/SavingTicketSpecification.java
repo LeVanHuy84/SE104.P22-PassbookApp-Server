@@ -24,7 +24,7 @@ public class SavingTicketSpecification {
 
         private static Specification<SavingTicket> hasCitizenID(String citizenID) {
         return (root, query, cb) -> {
-            if (citizenID == null) return cb.conjunction();
+            if (citizenID == null || citizenID.isBlank()) return cb.conjunction();
             return cb.equal(root.get("user").get("citizenID"), citizenID);
         };
     }

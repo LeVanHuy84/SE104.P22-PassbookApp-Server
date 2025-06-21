@@ -68,8 +68,8 @@ public class UserController {
     //Endpoint dành cho admin
     @PutMapping("/active/{userId}")
     @PreAuthorize("hasAuthority('SET_ACTIVE_USER')")
-    public ResponseEntity<Void> setUserActive(@PathVariable Long userId, @RequestParam boolean active) {
-        userService.setUserActive(userId, active);
+    public ResponseEntity<Void> setUserActive(@PathVariable Long userId, @RequestBody boolean isActive) {
+        userService.setUserActive(userId, isActive);
         return ResponseEntity.ok().build();
     }
 

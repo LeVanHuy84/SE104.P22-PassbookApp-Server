@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.group3.server.dtos.report.DailyReportResponse;
 import com.group3.server.dtos.report.MonthlyReportResponse;
 import com.group3.server.services.report.ReportService;
 
@@ -21,13 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;
-
-    // Endpoint dành cho staff
-    @GetMapping("/daily")
-    @PreAuthorize("hasAuthority('VIEW_REPORTS')")
-    public ResponseEntity<List<DailyReportResponse>> getDailyReports(@RequestParam int month, @RequestParam int year) {
-        return ResponseEntity.ok(reportService.getDailyReports(month, year));
-    }
 
     // Endpoint dành cho staff
     @GetMapping("/monthly")

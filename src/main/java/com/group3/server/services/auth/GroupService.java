@@ -34,11 +34,16 @@ public class GroupService {
 
     public List<Permission> getAllPermissions() {
         return permissionRepository.findAll().stream()
-                .filter(p -> p.getId() != 20L)
+                .filter(p -> p.getId() != 20L && p.getId() != 2L)
                 .toList();
     }
 
     public GroupResponse createGroup(GroupRequest request) {
+        groupRepository.findByName(request.getName())
+                .ifPresent(group -> {
+                    throw new RuntimeException("Nhóm quyền với tên " + request.getName() + " đã tồn tại");
+                });
+
         Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissionIds()));
 
         Group group = new Group();
@@ -72,7 +77,7 @@ public class GroupService {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm quyền với id: " + id));
         if(group.getUsers() != null && !group.getUsers().isEmpty()) {
-            throw new RuntimeException("Không thể xóa nhóm quyền này vì nó đang được sử dụng bởi người dùng");
+            throw new RuntimeException("Không thể xóa nhóm quyền này vì có người dùng đang sử dụng nhóm quyền này");
         }
         if(group.getName().equals("CUSTOMER")) {
             throw new RuntimeException("Không thể xóa nhóm quyền CUSTOMER");

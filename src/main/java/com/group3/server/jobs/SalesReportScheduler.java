@@ -15,10 +15,11 @@ public class SalesReportScheduler {
 
     private final ReportGeneratorService reportGeneratorService;
 
-    // Chạy lúc 00:01 sáng mỗi ngày
-    @Scheduled(cron = "0 1 0 * * *")
+    // Chạy lúc 00:01 sáng mỗi tháng
+    //@Scheduled(cron = "0 1 0 1 * ?")
+    @Scheduled(cron = "0 44 22 * * ?")
     public void runDailyScheduler() {
         LocalDate yesterday = LocalDate.now().minusDays(1); // Báo cáo cho ngày hôm qua
-        reportGeneratorService.createDailyReport(yesterday);
+        reportGeneratorService.createMonthlyReport(yesterday);
     }
 }

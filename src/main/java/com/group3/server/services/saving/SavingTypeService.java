@@ -39,14 +39,21 @@ public class SavingTypeService {
     @Transactional
     public SavingTypeResponse createSavingType(SavingTypeRequest request) {
         try {
+            savingTypeRepository.findByTypeName(request.getTypeName())
+                    .ifPresent(type -> {
+                        throw new RuntimeException("Loại tiết kiệm với tên " + request.getTypeName() + " đã tồn tại");
+                    });
+            
+            if (savingTypeRepository.findByDuration(request.getDuration()) != null) {
+                throw new RuntimeException("Loại tiết kiệm với thời hạn " + request.getDuration() + " đã tồn tại");
+            }
+            
             SavingType newType = savingTypeMapper.toEntity(request);
-            newType.setActive(true);
             return savingTypeMapper.toDTO(savingTypeRepository.save(newType));
         } catch (RuntimeException e) {
             throw new RuntimeException("Lỗi tạo mới loại tiết kiệm" + e.getMessage());
         }
     }
-
 
     @Transactional
     public SavingTypeResponse updateSavingType(Long id, SavingTypeRequest request) {
@@ -76,6 +83,9 @@ public class SavingTypeService {
         try {
             SavingType savingType = savingTypeRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Loại tiết kiệm không tồn tại"));
+            if (savingType.getDuration() == 0) {
+                throw new RuntimeException("Không thể ẩn tiết kiệm không kỳ hạn");
+            }
             savingType.setActive(isActive);
 
             // Nếu muốn ngắt liên kết các saving ticket khi disable type, xử lý ở đây
@@ -93,6 +103,9 @@ public class SavingTypeService {
 
             if (savingType.getSavingTickets() != null && !savingType.getSavingTickets().isEmpty()) {
                 throw new RuntimeException("Không thể xóa loại tiết kiệm này vì nó đang được sử dụng trong các phiếu gửi tiết kiệm");
+            }
+            if (savingType.getDuration() == 0) {
+                throw new RuntimeException("Không thể xóa loại tiết kiệm không kỳ hạn");
             }
 
             savingTypeRepository.delete(savingType);
