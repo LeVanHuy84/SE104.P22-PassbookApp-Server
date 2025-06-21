@@ -45,7 +45,7 @@ public class ReportService {
         return result;
     }
 
-    private MonthlyReportResponse getReportByMonth(LocalDate month) {
+    public MonthlyReportResponse getReportByMonth(LocalDate month) {
         List<MonthlyReportDetail> reports = monthlyReportRepository.findAllByReportMonth(month);
 
         List<MonthlyReportDetailResponse> dtos = monthlyReportDetailMapper.toDTOs(reports);

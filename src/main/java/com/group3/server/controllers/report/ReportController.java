@@ -1,5 +1,6 @@
 package com.group3.server.controllers.report;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ReportController {
     private final ReportService reportService;
 
     // Endpoint dành cho staff
-    @GetMapping("/monthly")
+    @GetMapping("/list-month")
     @PreAuthorize("hasAuthority('VIEW_REPORTS')")
     public ResponseEntity<List<MonthlyReportResponse>> getMonthlyReports(
             @RequestParam int fromYear, @RequestParam int fromMonth,
@@ -30,4 +31,11 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getMonthlyReports(fromYear, fromMonth, toYear, toMonth));
     }
 
+    @GetMapping("/monthly")
+    @PreAuthorize("hasAuthority('VIEW_REPORTS')")
+    public ResponseEntity<MonthlyReportResponse> getMonthlyReport(
+            @RequestParam int year, @RequestParam int month) {
+        LocalDate monthDate = LocalDate.of(year, month, 1);
+        return ResponseEntity.ok(reportService.getReportByMonth(monthDate));
+    }
 }
