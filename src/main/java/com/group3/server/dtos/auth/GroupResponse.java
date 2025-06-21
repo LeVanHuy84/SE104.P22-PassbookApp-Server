@@ -2,6 +2,8 @@ package com.group3.server.dtos.auth;
 
 import java.util.List;
 
+import com.group3.server.models.auth.Permission;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +15,5 @@ public class GroupResponse {
     private Integer id;
     private String name;
     private String description;
-    private List<String> permissions;
+    private List<Permission> permissions;
 }

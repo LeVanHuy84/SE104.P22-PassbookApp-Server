@@ -28,7 +28,7 @@ public class GroupService {
     public List<GroupResponse> getAllGroupsNotAdmin() {
         return groupRepository
                 .findByNameNot("ADMIN").stream().map(group -> new GroupResponse(group.getId(), group.getName(),
-                        group.getDescription(), group.getPermissions().stream().map(Permission::getName).toList()))
+                        group.getDescription(), group.getPermissions().stream().toList()))
                 .toList();
     }
 
@@ -49,7 +49,7 @@ public class GroupService {
         Group savedGroup = groupRepository.save(group);
 
         return new GroupResponse(savedGroup.getId(), savedGroup.getName(), savedGroup.getDescription(),
-                permissions.stream().map(Permission::getName).toList());
+                permissions.stream().toList());
     }
 
     public GroupResponse updateGroup(Integer id, GroupRequest request) {
@@ -64,7 +64,8 @@ public class GroupService {
         Group updatedGroup = groupRepository.save(group);
 
         return new GroupResponse(updatedGroup.getId(), updatedGroup.getName(), updatedGroup.getDescription(),
-                permissions.stream().map(Permission::getName).toList());
+                permissions.stream().toList());
+
     }
 
     public void deleteGroup(Integer id) {
