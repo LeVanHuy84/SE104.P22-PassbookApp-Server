@@ -161,7 +161,7 @@ public class AuthenticationService {
 
     public void sendOtp(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email: " + email + " đã được đăng ký");
+            throw new RuntimeException("Email: " + email + " đã được đăng ký bởi tài khoản khác");
         }
         String subject = "Xác thực tài khoản";
         String otp = EmailUtil.generateOtp();

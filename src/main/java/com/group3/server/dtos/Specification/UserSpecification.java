@@ -45,7 +45,7 @@ public class UserSpecification {
         };
     }
 
-    private static Specification<User> hasGroupId(Long groupId) {
+    private static Specification<User> hasGroupId(Integer groupId) {
         return (root, query, cb) -> {
             if (groupId == null) {
                 // Lọc tất cả user có group.name khác ADMIN
