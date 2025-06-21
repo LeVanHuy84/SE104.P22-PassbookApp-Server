@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,6 +39,7 @@ public class UserController {
 
     //Endpoint dành cho admin/staff
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public ResponseEntity<PageResponse<UserResponse>> getUsers(
             @ModelAttribute UserFilter filter,
             @RequestParam(defaultValue = "0", required = false) int page,
@@ -65,12 +67,14 @@ public class UserController {
 
     //Endpoint dành cho admin
     @PutMapping("/active/{userId}")
+    @PreAuthorize("hasAuthority('SET_ACTIVE_USER')")
     public ResponseEntity<Void> setUserActive(@PathVariable Long userId, @RequestParam boolean active) {
         userService.setUserActive(userId, active);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{userId}/group")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<Void> setGroupForUser(@PathVariable Long userId, @RequestBody Map<String, Integer> request) {
         Integer groupId = request.get("groupId");
         if (groupId == null) {

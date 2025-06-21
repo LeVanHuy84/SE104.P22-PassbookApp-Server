@@ -27,6 +27,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("/permissions")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<List<Permission>> getAllPermissions() {
         List<Permission> permissions = groupService.getAllPermissions();
         return ResponseEntity.ok(permissions);
@@ -34,25 +35,28 @@ public class GroupController {
 
     // Endpoint dành cho admin/staff
     @GetMapping("/groups")
-    @PreAuthorize("hasAuthority('VIEW_PARAMETERS')")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<List<GroupResponse>> getAllGroups() {
         List<GroupResponse> groups = groupService.getAllGroupsNotAdmin();
         return ResponseEntity.ok(groups);
     }
 
     @PostMapping("/groups")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<GroupResponse> createGroup(@RequestBody GroupRequest request) {
         GroupResponse groupResponse = groupService.createGroup(request);
         return ResponseEntity.ok(groupResponse);
     }
 
     @PutMapping("/groups/{id}")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<GroupResponse> updateGroup(@PathVariable Integer id, @RequestBody GroupRequest request) {
         GroupResponse groupResponse = groupService.updateGroup(id, request);
         return ResponseEntity.ok(groupResponse);
     }
 
     @DeleteMapping("/groups/{id}")
+    @PreAuthorize("hasAuthority('ADMIN_PREVILAGE')")
     public ResponseEntity<Void> deleteGroup(@PathVariable Integer id) {
         groupService.deleteGroup(id);
         return ResponseEntity.noContent().build();

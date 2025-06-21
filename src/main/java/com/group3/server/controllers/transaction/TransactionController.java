@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ public class TransactionController {
 
     // Endpoint cho staff
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_ALL_TRANSACTIONS')")
     public ResponseEntity<PageResponse<TransactionResponse>> getAllTransactions(
             @ModelAttribute TransactionFilter filter,
             @RequestParam(defaultValue = "0", required = false) int page,
@@ -61,6 +63,7 @@ public class TransactionController {
 
     // Endpoint cho customer
     @GetMapping("/customer")
+    @PreAuthorize("hasAuthority('VIEW_MY_TRANSACTIONS')")
     public ResponseEntity<PageResponse<TransactionResponse>> getTransactionsByCurrentUser(
             @ModelAttribute TransactionFilter filter,
             @RequestParam(defaultValue = "0") int page,
@@ -92,6 +95,7 @@ public class TransactionController {
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
     @PostMapping("/deposit/{userId}")
+    @PreAuthorize("hasAuthority('DEPOSIT')")
     public ResponseEntity<TransactionResponse> deposit(
         @PathVariable Long userId,        
         @RequestBody BigDecimal amount
@@ -102,6 +106,7 @@ public class TransactionController {
 
     // Endpoint cho staff/ customer tương tự như deposit
     @PostMapping("/withdraw/{userId}")
+    @PreAuthorize("hasAuthority('WITHDRAW')")
     public ResponseEntity<TransactionResponse> withdrawal(
         @PathVariable Long userId,        
         @RequestBody BigDecimal amount

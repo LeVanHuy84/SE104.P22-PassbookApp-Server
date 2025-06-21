@@ -18,6 +18,7 @@ import com.group3.server.models.transactions.enums.TransactionType;
 import com.group3.server.repositories.auth.UserRepository;
 import com.group3.server.repositories.system.ParameterRepository;
 import com.group3.server.repositories.transactions.TransactionHistoryRepository;
+import com.group3.server.utils.AuthUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,12 @@ public class TransactionService {
     @Transactional
     public TransactionResponse createTransaction(BigDecimal amount, Long userId, TransactionType transactionType) {
         try {
+            String groupName = AuthUtils.getGroupName();
+            Long currentUserId = AuthUtils.getCurrentUserId();
+            if (groupName.equals("CUSTOMER") && !currentUserId.equals(userId)) {
+                throw new RuntimeException("Bạn không có quyền thực hiện giao dịch cho người dùng khác");
+            }
+            
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             if(!user.isActive()) {
                 throw new RuntimeException("Tài khoản người dùng đã bị khóa");

@@ -11,7 +11,7 @@ import com.group3.server.models.auth.User;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-    @Mapping(target = "groupName", source = "group.name")
+    @Mapping(target = "groupName", source = "group.description")
     UserResponse toDTO(User entity);
     List<UserResponse> toDTOs(List<User> entities);
 }

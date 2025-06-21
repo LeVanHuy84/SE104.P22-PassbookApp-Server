@@ -1,5 +1,6 @@
 package com.group3.server.controllers.system;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +22,14 @@ public class ParameterController {
 
     // Endpoint dành riêng cho admin
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_PARAMETERS')")
     public ParameterResponse getAllParameter() {
         return parameterService.getParameter();
     }
 
     // Endpoint dành riêng cho admin
     @PostMapping
+    @PreAuthorize("hasAuthority('UPDATE_PARAMETER')")
     public ParameterResponse updateParameter(@RequestBody ParameterRequest parameterRequest) {
         return parameterService.updateParameter(parameterRequest);
     }

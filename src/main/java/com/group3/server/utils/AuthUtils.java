@@ -25,4 +25,10 @@ public class AuthUtils {
         User userDetails = (User) auth.getPrincipal();
         return userDetails.getCitizenID();
     }
+
+    public static String getGroupName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User userDetails = (User) auth.getPrincipal();
+        return userDetails.getGroup().getName(); // tên của nhóm hiện tại
+    }
 }

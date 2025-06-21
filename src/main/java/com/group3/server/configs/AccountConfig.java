@@ -36,7 +36,7 @@ public class AccountConfig implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("Default group 'ADMIN' not found"));
 
         userRepository.save(User.builder().email(adminEmail).password(passwordEncoder.encode(adminPassword))
-                .fullName("Administrator").phone(null).dateOfBirth(null).citizenID(null).address(null)
+                .fullName("Administrator").phone(null).dateOfBirth(null).citizenID("000000000001").address(null)
                 .group(group).build());
     }
 }

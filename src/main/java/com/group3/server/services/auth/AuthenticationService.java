@@ -1,19 +1,5 @@
 package com.group3.server.services.auth;
 
-import com.group3.server.dtos.auth.LoginRequest;
-import com.group3.server.dtos.auth.RegisterRequest;
-import com.group3.server.dtos.auth.TokenResponse;
-import com.group3.server.models.auth.Group;
-import com.group3.server.models.auth.User;
-import com.group3.server.repositories.auth.GroupRepository;
-import com.group3.server.repositories.auth.UserRepository;
-import com.group3.server.repositories.system.ParameterRepository;
-import com.group3.server.services.JwtService;
-import com.group3.server.utils.TokenType;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -24,7 +10,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.group3.server.dtos.auth.LoginRequest;
+import com.group3.server.dtos.auth.RegisterRequest;
+import com.group3.server.dtos.auth.TokenResponse;
+import com.group3.server.models.auth.Group;
+import com.group3.server.models.auth.User;
+import com.group3.server.repositories.auth.GroupRepository;
+import com.group3.server.repositories.auth.UserRepository;
+import com.group3.server.repositories.system.ParameterRepository;
+import com.group3.server.services.JwtService;
 import com.group3.server.utils.EmailUtil;
+import com.group3.server.utils.TokenType;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +55,13 @@ public class AuthenticationService {
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Email: " + request.getEmail() + " not found"));
+                    .orElseThrow(() -> new RuntimeException("Email: " + request.getEmail() + " không tồn tại"));
 
             return generateAndStoreTokens(user);
 
         } catch (RuntimeException e) {
             log.error("Error authenticate", e);
-            throw new RuntimeException("Error authenticate" + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -81,7 +81,7 @@ public class AuthenticationService {
             }
 
             Group group = groupRepository.findByName("CUSTOMER")
-                    .orElseThrow(() -> new RuntimeException("Default group 'CUSTOMER' not found"));
+                    .orElseThrow(() -> new RuntimeException("Nhóm quyền 'CUSTOMER' không tồn tại"));
 
             User user = userRepository.save(User.builder().password(encoder.encode(request.getPassword()))
                     .email(request.getEmail()).phone(request.getPhone()).fullName(request.getFullName())
@@ -92,7 +92,7 @@ public class AuthenticationService {
 
         } catch (RuntimeException e) {
             log.error("Register errors", e);
-            throw new RuntimeException("Register errors" + e.getMessage());
+            throw new RuntimeException("Lỗi đăng ký\n" + e.getMessage());
         }
     }
 
@@ -103,7 +103,8 @@ public class AuthenticationService {
         if (!jwtService.isValidToken(refreshToken, user, TokenType.REFRESH)
                 || !refreshToken.equals(redisTokenService.getToken(username, TokenType.REFRESH))
                 || redisTokenService.isTokenBlacklisted(refreshToken)) {
-            throw new RuntimeException("Invalid refresh token");
+            log.error("Invalid refresh token");
+            throw new RuntimeException("Lỗi token");
         }
 
         String oldAccessToken = redisTokenService.getToken(user.getUsername(), TokenType.ACCESS);
@@ -119,7 +120,8 @@ public class AuthenticationService {
     public void logout(String token) {
         String username = jwtService.extractUsername(token, TokenType.ACCESS);
         if (!token.equals(redisTokenService.getToken(username, TokenType.ACCESS))) {
-            throw new RuntimeException("Invalid access token");
+            log.error("Invalid access token");
+            throw new RuntimeException("Lỗi token");
         }
 
         String accessToken = redisTokenService.getToken(username, TokenType.ACCESS);
@@ -132,7 +134,7 @@ public class AuthenticationService {
 
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email: " + email + " not found"));
+                .orElseThrow(() -> new RuntimeException("Email: " + email + " không tồn tại"));
         String newPassWord = EmailUtil.generateRandomPassword();
         String subject = "Đặt lại mật khẩu";
         String body = "Mật khẩu tài khoản mới của bạn là: " + newPassWord;
@@ -143,14 +145,14 @@ public class AuthenticationService {
 
     public void changePassword(String oldPassword, String newPassword) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
         if (oldPassword.equals(newPassword)) {
-            throw new RuntimeException("New password must be different from old password");
+            throw new RuntimeException("Mật khẩu mới không được trùng với mật khẩu cũ");
         }
 
         if (!encoder.matches(oldPassword, user.getPassword())) {
-            throw new RuntimeException("Old password is incorrect");
+            throw new RuntimeException("Mật khẩu cũ không đúng");
         }
 
         user.setPassword(encoder.encode(newPassword));

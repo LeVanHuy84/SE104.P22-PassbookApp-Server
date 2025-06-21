@@ -3,6 +3,7 @@ package com.group3.server.controllers.report;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,12 +24,14 @@ public class ReportController {
 
     // Endpoint dành cho staff
     @GetMapping("/daily")
+    @PreAuthorize("hasAuthority('VIEW_REPORTS')")
     public ResponseEntity<List<DailyReportResponse>> getDailyReports(@RequestParam int month, @RequestParam int year) {
         return ResponseEntity.ok(reportService.getDailyReports(month, year));
     }
 
     // Endpoint dành cho staff
     @GetMapping("/monthly")
+    @PreAuthorize("hasAuthority('VIEW_REPORTS')")
     public ResponseEntity<List<MonthlyReportResponse>> getMonthlyReports(
             @RequestParam int fromYear, @RequestParam int fromMonth,
             @RequestParam int toYear, @RequestParam int toMonth) {

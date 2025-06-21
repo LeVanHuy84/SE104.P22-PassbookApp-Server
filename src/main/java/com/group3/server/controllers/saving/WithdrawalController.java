@@ -1,6 +1,7 @@
 package com.group3.server.controllers.saving;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class WithdrawalController {
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff
     @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_WITHDRAWAL_TICKET')")
     public ResponseEntity<WithdrawalTicketResponse> createWithdrawalTicket(@RequestBody WithdrawalTicketRequest request) {
         WithdrawalTicketResponse response = withdrawalTicketService.createWithdrawalTicket(request);
         return ResponseEntity.ok(response);

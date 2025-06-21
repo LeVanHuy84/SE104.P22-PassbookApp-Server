@@ -3,6 +3,7 @@ package com.group3.server.services.auth;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 import com.group3.server.dtos.auth.GroupRequest;
@@ -32,7 +33,9 @@ public class GroupService {
     }
 
     public List<Permission> getAllPermissions() {
-        return permissionRepository.findAll();
+        return permissionRepository.findAll().stream()
+                .filter(p -> p.getId() != 20L)
+                .toList();
     }
 
     public GroupResponse createGroup(GroupRequest request) {
@@ -51,7 +54,7 @@ public class GroupService {
 
     public GroupResponse updateGroup(Integer id, GroupRequest request) {
         Group group = groupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Group not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm quyền với id: " + id));
 
         Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissionIds()));
         group.setName(request.getName());
@@ -66,9 +69,12 @@ public class GroupService {
 
     public void deleteGroup(Integer id) {
         Group group = groupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Group not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm quyền với id: " + id));
         if(group.getUsers() != null && !group.getUsers().isEmpty()) {
-            throw new RuntimeException("Cannot delete group with users assigned");
+            throw new RuntimeException("Không thể xóa nhóm quyền này vì nó đang được sử dụng bởi người dùng");
+        }
+        if(group.getName().equals("CUSTOMER")) {
+            throw new RuntimeException("Không thể xóa nhóm quyền CUSTOMER");
         }
         groupRepository.delete(group);
     }

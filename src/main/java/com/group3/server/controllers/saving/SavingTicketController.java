@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class SavingTicketController {
 
     //Endpoint dành cho staff
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_ALL_SAVINGTICKETS')")
     public ResponseEntity<PageResponse<SavingTicketResponse>> getSavingTickets(
             @ModelAttribute SavingTicketFilter filter,
             @RequestParam(defaultValue = "0", required = false) int page,
@@ -58,6 +60,7 @@ public class SavingTicketController {
 
     //Endpoint dành cho customer
     @GetMapping("/customer")
+    @PreAuthorize("hasAuthority('VIEW_MY_SAVINGTICKETS')")
     public ResponseEntity<PageResponse<SavingTicketResponse>> getSavingTicketsForCustomer(
             @ModelAttribute SavingTicketFilter filter,
             @RequestParam(defaultValue = "0") int page,
@@ -90,6 +93,7 @@ public class SavingTicketController {
     // Đối với customer, userId sẽ được lấy từ Id của user
     // Đối với staff, userId sẽ được truyền vào (có thể dùng find user byName hoặc by citizenID)
     @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_SAVINGTICKET')")
     public ResponseEntity<SavingTicketResponse> createSavingTicket(@RequestBody SavingTicketRequest request) {
         SavingTicketResponse response = savingTicketService.createSavingTicket(request);
         return ResponseEntity.ok(response);

@@ -3,7 +3,11 @@ package com.group3.server.controllers.auth;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,9 +17,6 @@ import com.group3.server.dtos.auth.TokenResponse;
 import com.group3.server.services.auth.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -56,6 +57,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/change-password")
+    @PreAuthorize("hasAuthority('CHANGE_PASSWORD')")
     public ResponseEntity<Void> changePassword(@RequestBody Map<String, String> request) {
         String oldPassword = request.get("oldPassword");
         String newPassword = request.get("newPassword");
