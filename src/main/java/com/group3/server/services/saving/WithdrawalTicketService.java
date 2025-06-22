@@ -102,6 +102,7 @@ public class WithdrawalTicketService {
             ticket.setActualAmount(actualAmount);
 
             WithdrawalTicket savedTicket = withdrawalTicketRepository.save(ticket);
+            savingTicketRepository.save(savingTicket);
 
             // Tạo phiếu giao dịch chuyển tiền vào tài khoản
             transactionService.createTransaction(actualAmount, savingTicket.getUser().getId(),

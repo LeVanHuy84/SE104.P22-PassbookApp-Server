@@ -19,7 +19,8 @@ public class SavingTicketSpecification {
                 .where(hasCitizenID(filter.getCitizenID()))
                 .and(hasSavingTypeId(filter.getSavingTypeId()))
                 .and(hasAmount(filter.getAmount()))
-                .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()));
+                .and(hasBetweenDate(filter.getStartDate(), filter.getEndDate()))
+                .and(hasActive(filter.getIsActive()));
     }
 
         private static Specification<SavingTicket> hasCitizenID(String citizenID) {
@@ -64,4 +65,16 @@ public class SavingTicketSpecification {
         };
     }
 
+        private static Specification<SavingTicket> hasActive(Boolean isActive) {
+        return (root, query, cb) -> {
+            if(isActive == null) {
+                return cb.conjunction();
+            }
+            if (isActive) {
+                return cb.isTrue(root.get("isActive"));
+            } else {
+                return cb.isFalse(root.get("isActive"));
+            }
+        };
+    }
 }

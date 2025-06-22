@@ -73,6 +73,7 @@ INSERT INTO public.group_permissions (group_id, permission_id) VALUES (3, 19);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (3, 21);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 1);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 3);
+INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 4);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 10);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 12);
 INSERT INTO public.group_permissions (group_id, permission_id) VALUES (4, 13);

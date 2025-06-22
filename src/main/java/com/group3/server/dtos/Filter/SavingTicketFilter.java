@@ -28,4 +28,6 @@ public class SavingTicketFilter {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate endDate;
+
+    private Boolean isActive;
 }
