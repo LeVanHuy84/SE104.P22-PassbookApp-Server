@@ -18,7 +18,7 @@ public class SalesReportScheduler {
     // Chạy lúc 00:01 sáng mỗi tháng
     @Scheduled(cron = "0 1 0 1 * ?")
     //@Scheduled(cron = "0 44 22 * * ?")
-    public void runDailyScheduler() {
+    public void runMonthlyScheduler() {
         LocalDate yesterday = LocalDate.now().minusDays(1); // Báo cáo cho ngày hôm qua
         reportGeneratorService.createMonthlyReport(yesterday);
     }

@@ -62,6 +62,10 @@ public class GroupService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm quyền với id: " + id));
 
         Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissionIds()));
+        if(id == 2 && !request.getName().equals("CUSTOMER")) {
+            throw new RuntimeException("Không được thay đổi mã nhóm CUSTOMER");
+        }
+
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPermissions(permissions);
