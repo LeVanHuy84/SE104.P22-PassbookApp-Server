@@ -31,26 +31,28 @@ Tạo file `.vscode/launch.json` và dán nội dung sau:
       "mainClass": "com.group3.server.ServerApplication",
       "projectName": "server",
       "env": {
-        // Nếu bạn dùng CSDL PostgreSQL local, hãy comment URL online, bỏ comment các dòng sau và chỉnh sửa tên DB phù hợp:
-        // "DATABASE_URL": "jdbc:postgresql://localhost:5432/your_database_name",
-        // "DATABASE_USERNAME": "postgres",
-        // "DATABASE_PASSWORD": "postgres",
+        "__comment1": "Nếu bạn dùng CSDL PostgreSQL local, hãy dùng cấu hình sau:",
+        "__comment2": "DATABASE_URL: jdbc:postgresql://localhost:5432/your_database_name",
+        "__comment3": "DATABASE_USERNAME: postgres",
+        "__comment4": "DATABASE_PASSWORD: postgres",
+        
+        "__comment5": "Nếu bạn dùng CSDL online, gán URL vào dòng bên dưới:",
+        "DATABASE_URL": ".....",
 
-        // nếu dùng database online thì gán đường link URL của database vào đây
-        "DATABASE_URL": ".....", 
         "JWT_ACCESS_EXPIRATION": 3600000,
         "JWT_REFRESH_EXPIRATION": 604800000,
-        // Random key qua link: https://generate-random.org/string-generator?count=1&length=32&has_lowercase=0&has_lowercase=1&has_uppercase=0&has_symbols=0&has_numbers=0&has_numbers=1&is_pronounceable=0
+
+        "__comment6": "Random key có thể tạo tại: https://generate-random.org/string-generator?count=1&length=32&has_lowercase=1&has_uppercase=0&has_symbols=0&has_numbers=1&is_pronounceable=0",
         "JWT_REFRESH_SECRET_KEY": "....",
         "JWT_SECRET_KEY": "...",
 
-        // Đăng ký tài khoản redis và cấu hình
+        "__comment7": "Đăng ký tài khoản Redis (ví dụ: upstash) và cấu hình:",
         "REDIS_HOST": "****",
         "REDIS_PORT": 6379,
         "REDIS_PASSWORD": "****",
         "REDIS_USERNAME": "default",
 
-        // Tạo mật khẩu ứng dụng bằng gmail đã xác thực 2 lớp
+        "__comment8": "Tạo mật khẩu ứng dụng Gmail bằng tài khoản đã bật xác thực 2 bước:",
         "ADMIN_EMAIL": "....",
         "ADMIN_EMAIL_PASSWORD": "***",
 
@@ -60,3 +62,4 @@ Tạo file `.vscode/launch.json` và dán nội dung sau:
     }
   ]
 }
+
