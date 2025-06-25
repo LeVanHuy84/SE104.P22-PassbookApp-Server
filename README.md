@@ -31,35 +31,41 @@ Tạo file `.vscode/launch.json` và dán nội dung sau:
       "mainClass": "com.group3.server.ServerApplication",
       "projectName": "server",
       "env": {
-        "__comment1": "Nếu bạn dùng CSDL PostgreSQL local, hãy dùng cấu hình sau:",
-        "__comment2": "DATABASE_URL: jdbc:postgresql://localhost:5432/your_database_name",
-        "__comment3": "DATABASE_USERNAME: postgres",
-        "__comment4": "DATABASE_PASSWORD: postgres",
-        
-        "__comment5": "Nếu bạn dùng CSDL online, gán URL vào dòng bên dưới:",
         "DATABASE_URL": ".....",
-
         "JWT_ACCESS_EXPIRATION": 3600000,
         "JWT_REFRESH_EXPIRATION": 604800000,
-
-        "__comment6": "Random key có thể tạo tại: https://generate-random.org/string-generator?count=1&length=32&has_lowercase=1&has_uppercase=0&has_symbols=0&has_numbers=1&is_pronounceable=0",
         "JWT_REFRESH_SECRET_KEY": "....",
         "JWT_SECRET_KEY": "...",
-
-        "__comment7": "Đăng ký tài khoản Redis (ví dụ: upstash) và cấu hình:",
         "REDIS_HOST": "****",
         "REDIS_PORT": 6379,
         "REDIS_PASSWORD": "****",
         "REDIS_USERNAME": "default",
-
-        "__comment8": "Tạo mật khẩu ứng dụng Gmail bằng tài khoản đã bật xác thực 2 bước:",
         "ADMIN_EMAIL": "....",
         "ADMIN_EMAIL_PASSWORD": "***",
-
         "ADMIN_ACCOUNT_EMAIL": "admin@gmail.com",
         "ADMIN_ACCOUNT_PASSWORD": "123456"
       }
     }
   ]
 }
+```
+## Hướng dẫn cấu hình file `.vscode/launch.json`
 
+### ✅ Nếu bạn dùng **CSDL PostgreSQL local**, hãy:
+- Comment `"DATABASE_URL"` online trong `launch.json`
+- Thay thế bằng:
+  "DATABASE_URL": "jdbc:postgresql://localhost:5432/your_database_name",
+  "DATABASE_USERNAME": "postgres",
+  "DATABASE_PASSWORD": "postgres",
+
+### JWT Key
+Tạo chuỗi ngẫu nhiên tại:
+https://generate-random.org/string-generator
+
+### Redis
+Đăng ký Upstash Redis hoặc Redis Cloud
+
+### Gmail (Gửi mail hệ thống)
+Vào https://myaccount.google.com/
+Bật xác thực 2 bước
+Tạo mật khẩu ứng dụng và dùng thay cho ADMIN_EMAIL_PASSWORD
