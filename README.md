@@ -67,5 +67,5 @@ https://generate-random.org/string-generator
 
 ### Gmail (Gửi mail hệ thống)
 Vào https://myaccount.google.com/
-Bật xác thực 2 bước
-Tạo mật khẩu ứng dụng và dùng thay cho ADMIN_EMAIL_PASSWORD
+-> Bật xác thực 2 bước
+-> Tạo mật khẩu ứng dụng và dùng thay cho ADMIN_EMAIL_PASSWORD
